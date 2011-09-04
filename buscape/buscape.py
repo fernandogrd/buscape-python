@@ -80,8 +80,12 @@ class Buscape():
         if format.upper() not in ["XML", "JSON"]:
             raise ValueError("the return format must be XML or JSON")
 
-        if not keyword and (categoryID < 0 or not categoryID):
-            raise ValueError("keyword or categoryID option must be specified")
+        if not keyword and categoryID != 0:
+            # categoryID != 0 valida para categoryID == 0 e not
+            # categoryID invalida para todos os valores Falsos. 
+            if categoryID < 0 or not categoryID:
+                raise ValueError("keyword or categoryID option must be "
+                                 "specified")
         elif keyword and categoryID:
             raise ValueError("you must specify only keyword or categoryID. "
                              "Both values aren't accepted")
@@ -108,8 +112,12 @@ class Buscape():
         if format.upper() not in ["XML", "JSON"]:
             raise ValueError("the return format must be XML or JSON")
 
-        if not keyword and (categoryID < 0 or not categoryID):
-            raise ValueError("keyword or categoryID option must be specified")
+        if not keyword and categoryID != 0:
+            # categoryID != 0 valida para categoryID == 0 e not
+            # categoryID invalida para todos os valores Falsos. 
+            if categoryID < 0 or not categoryID:
+                raise ValueError("keyword or categoryID option must be "
+                                 "specified")
 
         if results not in range(1, 999):
             raise ValueError("results must be a integer between 1 and 999")
@@ -179,13 +187,14 @@ class Buscape():
             raise ValueError("token option must be specified")
 
         if campaignList:
-            parameter = "sourceName=%s&publisherId=%s&siteId=%s&"
-            "campaignList=%s&token=%s&format=%s" %\
-                        (sourceName, publisherID, siteID, campaignList, token,
-                         format)
+            parameter = ("sourceName=%s&publisherId=%s&siteId=%s&"
+                         "campaignList=%s&token=%s&format=%s" %
+                         (sourceName, publisherID, siteID, campaignList, token,
+                         format))
         else:
-            parameter = "sourceName=%s&publisherId=%s&siteId=%s&token=%s&"
-            "format=%s" % (sourceName, publisherID, siteID, token, format)
+            parameter = ("sourceName=%s&publisherId=%s&siteId=%s&token=%s&"
+                         "format=%s" % (sourceName, publisherID, siteID,
+                         token, format))
 
         ret = self.__search(method='createSource/lomadee', parameter=parameter)
 

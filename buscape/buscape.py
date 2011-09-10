@@ -1,13 +1,19 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-__author__ = "Igor Hercowitz"
-__author__ = "Alê Borba"
+__author__ = "Igor Hercowitz, Alê Borba"
 __version__ = "v0.6.1"
 
 from urllib import urlencode
 from urllib2 import urlopen, URLError, HTTPError
 
+# Valores válidos para filtro sort
+SORT_VALUES = ['price', 'dprice', 'rate', 'drate', 'seller', 'dseller',
+                'installment', 'dinstallment', 'numberofinstallments',
+                'dnumberofinstallments', 'trustedStore']
+
+# Volores válidos para medal
+MEDAL_VALUES = ['all', 'diamond', 'gold', 'silver', 'bronze']
 
 class Buscape():
     """
@@ -64,6 +70,78 @@ class Buscape():
         except URLError, e:
             raise e
 
+    def __default_filter(self, format='XML', results=10, page=1, priceMin=None,
+                         priceMax=None, sort=None, medal=None):
+        '''
+        Lista de produtos, lista de ofertas, lista de produtos populares,
+        avaliação de usuários têm os mesmos parâmetros de filtro.
+        Método para evitar repetição.
+        '''
+        if format.upper() not in ["XML", "JSON"]:
+            raise ValueError("the return format must be XML or JSON")
+
+        if results not in range(1, 999):
+            raise ValueError("results must be a integer between 1 and 999")
+
+        if page not in range(1, 999):
+            raise ValueError("page number must be a integer between 1 and 999")
+
+        if priceMin is not None:
+            try:
+                priceMin = float(priceMin)
+            except ValueError:
+                raise AssertionError('priceMin must be a float')
+            except TypeError:
+                raise TypeError('priceMin must be a float')
+
+            if priceMin < 0.0:
+                raise ValueError('priceMin cannot be negative.')
+
+        if priceMax is not None:
+            try:
+                priceMax = float(priceMax)
+            except ValueError:
+                raise AssertionError('priceMax must be a float')
+            except TypeError:
+                raise TypeError('priceMax must be a float')
+
+
+            if priceMax < 0.0:
+                raise ValueError('priceMax cannot be negative.')
+
+        if priceMax is not None and priceMin is not None:
+            if priceMax < priceMin:
+                raise ValueError('priceMax must be greater then priceMin')
+
+        if sort is not None:
+            if sort not in SORT_VALUES:
+                # TODO: Melhorar mensagem de erro, indicar valores
+                # válidos
+                raise ValueError('The value in the sort parameter is not '
+                                 'valid')
+
+        if medal is not None:
+            if medal not in MEDAL_VALUES:
+                # TODO: Melhorar mensagem de erro
+                raise ValueError('The value in the medal parameter is not '
+                                 'valid')
+
+        params = {'format': format, 'results': results, 'page': page}
+
+        if priceMin is not None:
+            params['priceMin'] = priceMin
+
+        if priceMax is not None:
+            params['priceMax'] = priceMax
+
+        if sort is not None:
+            params['sort'] = sort
+
+        if medal is not None:
+            params['medal'] = None
+
+        return params
+
     def set_sandbox(self):
         """
         Define the environment test
@@ -101,53 +179,30 @@ class Buscape():
         return ret
 
     def find_product_list(self, keyword=None, categoryID=None, format='XML',
-                          lomadee=False, results=10, page=1, minPrice=0.0,
-                          maxPrice=0.0):
+                          lomadee=False, results=10, page=1, minPrice=None,
+                          maxPrice=None, sort=None, medal=None):
         """
         Método permite que você busque uma lista de produtos únicos
         utilizando o id da categoria final ou um conjunto de palavras-chaves
         ou ambos.
         """
+        if keyword is None and categoryID is None:
+            raise ValueError("keyword or categoryID option must be specified")
 
-        if format.upper() not in ["XML", "JSON"]:
-            raise ValueError("the return format must be XML or JSON")
+        if categoryID is not None:
+            if not isinstance(categoryID, int):
+                raise AssertionError('categoryID must be int')
+            if categoryID < 0:
+                raise ValueError('categoryID must be positive')
 
-        if not keyword and categoryID != 0:
-            # categoryID != 0 valida para categoryID == 0 e not
-            # categoryID invalida para todos os valores Falsos. 
-            if categoryID < 0 or not categoryID:
-                raise ValueError("keyword or categoryID option must be "
-                                 "specified")
 
-        if results not in range(1, 999):
-            raise ValueError("results must be a integer between 1 and 999")
-
-        if page not in range(1, 999):
-            raise ValueError("page number must be a integer between 1 and 999")
-
-        if minPrice is None or minPrice == '':
-            raise ValueError("minimum price must be a valid number")
-        elif minPrice < 0.0:
-            raise ValueError("minimum price can not be negative")
-
-        if maxPrice is None or maxPrice == '':
-            raise ValueError("maximum price must be a valid number")
-        elif maxPrice < 0.0:
-            raise ValueError("maximum price can not be negative")
-        elif maxPrice > 0.0 and minPrice > maxPrice:
-            raise ValueError("minimum price can not be greater than maximum "
-                             "price")
-
-        params = {'format': format, 'results': results, 'page': page}
+        params = self.__default_filter(format, results, page, minPrice,
+                                  maxPrice, sort, medal)
 
         if keyword:
             params['keyword'] = keyword
         if categoryID:
             params['categoryID'] = categoryID
-        if maxPrice:
-            params['maxPrice'] = maxPrice
-        if minPrice:
-            params['minPrice'] = minPrice
 
         if lomadee:
             method = "findProductList/lomadee"
@@ -202,16 +257,15 @@ class Buscape():
 
     def find_offer_list(self, categoryID=None, productID=None, barcode=None,
                         keyword=None, lomadee=False, format="XML",
-                        results=None, page=None, priceMin=None, priceMax=None,
+                        results=10, page=1, priceMin=None, priceMax=None,
                         sort=None, medal=None):
         """
         Método permite que você busque uma lista de produtos únicos
         utilizando o id da categoria final ou um conjunto de palavras-chaves
         ou ambos.
         """
-
-        if format.upper() not in ["XML", "JSON"]:
-            raise ValueError("the return format must be XML or JSON")
+        params = self.__default_filter(format, results, page, priceMin,
+                                       priceMax, sort, medal)
 
         if lomadee:
             method = 'findOfferList/lomadee'
@@ -231,41 +285,13 @@ class Buscape():
         else:
             raise ValueError("One parameter must be especified")
 
+
         #Montando o filtro
-        if results:
-            parameter = parameter + "&results=%s" % (results)
-
-        if page:
-            parameter = parameter + "&page=%s" % (page)
-
-        if priceMin:
-            parameter = parameter + "&priceMin=%s" % (priceMin)
-
-        if priceMax:
-            parameter = parameter + "&priceMax=%s" % (priceMax)
-
-        if sort:
-            if sort in ['price', 'dprice', 'rate', 'drate', 'seller',
-                        'dseller', 'installment', 'dinstallment',
-                        'numberofinstallments', 'dnumberofinstallments',
-                        'trustedStore']:
-                parameter = parameter + "&sort=%s" % (sort)
-            else:
-                raise ValueError('The value in the sort parameter is not '
-                                 'valid')
-
-        if medal:
-            if medal in ['all', 'diamond', 'gold', 'silver', 'bronze']:
-                parameter = parameter + "medal=%s" % (medal)
-            else:
-                raise ValueError('The value in the medal parameter is not '
-                                 'valid')
 
         parameter = parameter + "&format=%s" % (format)
 
-        ret = self.__search(method=method, parameter=parameter)
+        return self.__search(method=method, parameter=parameter)
 
-        return ret
 
     def top_products(self, format="XML", filterID=None, valueID=None):
         """

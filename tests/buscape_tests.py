@@ -2,7 +2,7 @@ import unittest
 from urllib2 import URLError, HTTPError
 import sys
 
-sys.path.insert(0, '..') 
+sys.path.insert(0, '..')
 from buscape import Buscape
 
 
@@ -12,14 +12,14 @@ class BuscapeTest(unittest.TestCase):
         try:
             callableObj(*args, **kwargs)
         except excClass, e:
-        
+
             if excClass == URLError:
                 reason = e.reason
-            elif excClass == HTTPError:    
+            elif excClass == HTTPError:
                 reason = e.msg
             else:
                 reason = e.message
-                
+
             if message is not None and reason == message:
                 return True
             else:
@@ -27,7 +27,7 @@ class BuscapeTest(unittest.TestCase):
         else:
             if hasattr(excClass,'__name__'): excName = excClass.__name__
             else: excName = str(excClass)
-            raise self.failureException, "%s not raised" % excName 
+            raise self.failureException, "%s not raised" % excName
 
 
 
@@ -35,23 +35,22 @@ class BuscapeTest(unittest.TestCase):
         self.applicationID = '2b613573535a6d324874493d'
         self.b = Buscape(applicationID=self.applicationID)
         self.b.set_sandbox()
-  
+
     def test_applicationid_cannot_be_none(self):
         self.assertRaisesMessage(ValueError, 'User ID must be specified', Buscape)
-        
+
     def test_applicationid_cannot_be_blank(self):
         self.assertRaisesMessage(ValueError, 'User ID must be specified', Buscape, applicationID='')
-    
+
     def test_application_has_not_been_approved(self):
         app = Buscape(applicationID=self.applicationID)
         self.assertRaisesMessage(HTTPError, 'Your application is not approved yet',app.find_category_list, keyword='xxx')
- 
+
     def test_application_with_wrong_applicationID_and_country_None(self):
         app = Buscape(applicationID='xpto', country=None)
         app.set_sandbox()
-        self.assertRaisesMessage(HTTPError, 'The request requires user authentication',app.find_category_list, keyword='xxx')        
-    
-    
+        self.assertRaisesMessage(HTTPError, 'The request requires user authentication',app.find_category_list, keyword='xxx')
+
     def test_find_category_parameters_cannot_be_none(self):
         self.assertRaisesMessage(ValueError, 'keyword or categoryID option must be specified',self.b.find_category_list)         
 
@@ -81,58 +80,45 @@ class BuscapeTest(unittest.TestCase):
     """
     def test_find_category_if_no_connection_should_raise_no_connection_error(self):
         self.assertRaisesMessage(URLError, 'no connection avaliable',self.b.find_category_list, categoryID=0)
-    """    
-    
+    """
     def test_find_category_by_keyword_must_return_200(self):
-        self.assertEquals(self.b.find_category_list(keyword='LG')['code'],200)    
+        self.assertEquals(self.b.find_category_list(keyword='LG')['code'],200)
 
     def test_find_category_by_keyword_must_return_data(self):
-        self.assertTrue(self.b.find_category_list(keyword='LG')['data'] is not None)              
+        self.assertTrue(self.b.find_category_list(keyword='LG')['data'] is not None)
 
     def test_find_category_by_categoryId_must_return_200(self):
-         self.assertEquals(self.b.find_category_list(categoryID=0)['code'],200)    
-         
+         self.assertEquals(self.b.find_category_list(categoryID=0)['code'],200)
+
     def test_find_category_by_categoryId_must_return_data(self):
-         self.assertTrue(self.b.find_category_list(categoryID=0)['data'] is not None)       
+         self.assertTrue(self.b.find_category_list(categoryID=0)['data'] is not None)
 
-
-         
-    def test_find_product_parameters_cannot_be_null(self):
-        self.assertRaisesMessage(ValueError, 'keyword or categoryID option must be specified',self.b.find_product_list)
-         
-    def test_find_product_parameters_cannot_be_blank(self):
-        self.assertRaisesMessage(ValueError, 'keyword or categoryID option must be specified',self.b.find_product_list,keyword='',categoryID='')   
-
-    def test_find_product_only_keyword_parameter_cannot_be_blank(self):
-        self.assertRaisesMessage(ValueError, 'keyword or categoryID option must be specified',self.b.find_product_list,keyword='')   
-
-    def test_find_product_only_categoryid_parameter_cannot_be_blank(self):
-        self.assertRaisesMessage(ValueError, 'keyword or categoryID option must be specified',self.b.find_product_list,categoryID='')  
+    def test_find_product_parameters_must_exists(self):
+        self.assertRaisesMessage(ValueError, 'keyword or categoryID option must be specified', self.b.find_product_list)
+        self.assertRaisesMessage(AssertionError, 'categoryID must be int', self.b.find_product_list,keyword='',categoryID='')
+        self.assertRaisesMessage(ValueError, 'categoryID must be positive', self.b.find_product_list, categoryID=-1)
 
     def test_find_product_only_keyword_parameter_must_return_200(self):
-        self.assertEquals(self.b.find_product_list(keyword='celular')['code'],200)  
+        self.assertEquals(self.b.find_product_list(keyword='celular')['code'],200)
 
     def test_find_product_only_keyword_parameter_must_return_data(self):
-        self.assertTrue(self.b.find_product_list(keyword='celular')['data'] is not None)          
-        
-        
+        self.assertTrue(self.b.find_product_list(keyword='celular')['data'] is not None)
+
     def test_find_product_only_categoryid_parameter_must_return_200(self):
-        self.assertEquals(self.b.find_product_list(categoryID=0)['code'],200)      
+        self.assertEquals(self.b.find_product_list(categoryID=0)['code'],200)
 
     def test_find_product_only_categoryid_parameter_must_return_data(self):
         self.assertTrue(self.b.find_product_list(categoryID=0)['data'] is not None)
 
-        
     def test_find_product_both_keywork_and_categoryid_parameter_must_return_200(self):
-        self.assertTrue(self.b.find_product_list(keyword='celular',categoryID=0)['code'],200)     
-        
-    def test_find_product_both_keywork_and_categoryid_parameter_must_return_data(self):
-        self.assertTrue(self.b.find_product_list(keyword='celular',categoryID=0)['data'] is not None)        
+        self.assertTrue(self.b.find_product_list(keyword='celular',categoryID=0)['code'],200)
 
+    def test_find_product_both_keywork_and_categoryid_parameter_must_return_data(self):
+        self.assertTrue(self.b.find_product_list(keyword='celular',categoryID=0)['data'] is not None)
 
     def test_find_product_format_must_be_xml_or_json(self):
-         self.assertRaisesMessage(ValueError, 'the return format must be XML or JSON',self.b.find_product_list,categoryID=0, format='letter')     
-     
+         self.assertRaisesMessage(ValueError, 'the return format must be XML or JSON',self.b.find_product_list,categoryID=0, format='letter')
+
     def test_find_product_format_must_be_case_insensitive(self):
        self.assertEquals(self.b.find_product_list(categoryID=0, format='json')['code'],200)  
 
@@ -164,55 +150,47 @@ class BuscapeTest(unittest.TestCase):
 
     def test_find_product_page_must_be_a_valid_integer(self):
         self.assertRaisesMessage(ValueError, 'page number must be a integer between 1 and 999',self.b.find_product_list,categoryID=0, page='A')
-        
+
     def test_find_product_page_must_be_between_1_and_999(self):
-        self.assertEquals(self.b.find_product_list(categoryID=0, page=20)['code'],200)  
+        self.assertEquals(self.b.find_product_list(categoryID=0, page=20)['code'],200)
 
+    def test_find_product_minPrice_must_be_float(self):
+        self.assertRaisesMessage(AssertionError, 'priceMin must be a float', self.b.find_product_list, categoryID=0, minPrice='')
+        self.assertRaisesMessage(TypeError, 'priceMin must be a float', self.b.find_product_list, categoryID=0, minPrice={})
 
-        
-    def test_find_product_minPrice_cannot_be_none(self):
-        self.assertRaisesMessage(ValueError, 'minimum price must be a valid number',self.b.find_product_list,categoryID=0, minPrice=None)       
-
-    def test_find_product_minPrice_cannot_be_blank(self):
-        self.assertRaisesMessage(ValueError, 'minimum price must be a valid number',self.b.find_product_list,categoryID=0, minPrice='')             
-        
     def test_find_product_minPrice_cannot_be_less_than_zero(self):
-        self.assertRaisesMessage(ValueError, 'minimum price can not be negative',self.b.find_product_list,categoryID=0, minPrice=-0.1)                
+        self.assertRaisesMessage(ValueError, 'priceMin cannot be negative.',self.b.find_product_list,categoryID=0, minPrice=-0.1)
 
-    def test_find_product_maxPrice_cannot_be_none(self):
-        self.assertRaisesMessage(ValueError, 'maximum price must be a valid number',self.b.find_product_list,categoryID=0, maxPrice=None)       
+    def test_find_product_maxPrice_must_be_float(self):
+        self.assertRaisesMessage(AssertionError, 'priceMax must be a float', self.b.find_product_list, categoryID=0, maxPrice='')
+        self.assertRaisesMessage(TypeError, 'priceMax must be a float', self.b.find_product_list,categoryID=0, maxPrice={})
 
-    def test_find_product_maxPrice_cannot_be_blank(self):
-        self.assertRaisesMessage(ValueError, 'maximum price must be a valid number',self.b.find_product_list,categoryID=0, maxPrice='')             
-        
     def test_find_product_maxPrice_cannot_be_less_than_zero(self):
-        self.assertRaisesMessage(ValueError, 'maximum price can not be negative',self.b.find_product_list,categoryID=0, maxPrice=-0.1)          
+        self.assertRaisesMessage(ValueError, 'priceMax cannot be negative.',self.b.find_product_list,categoryID=0, maxPrice=-0.1)
 
     def test_find_product_minPrice_cannot_greater_than_maxPrice(self):
-        self.assertRaisesMessage(ValueError, 'minimum price can not be greater than maximum price',self.b.find_product_list,categoryID=0, minPrice=1, maxPrice=0.9)
+        self.assertRaisesMessage(ValueError, 'priceMax must be greater then priceMin', self.b.find_product_list,categoryID=0, minPrice=1, maxPrice=0.9)
 
     def test_find_product_setting_minPrice_must_return_200(self):
-        self.assertEquals(self.b.find_product_list(keyword='celular', minPrice=200)['code'],200)         
- 
+        self.assertEquals(self.b.find_product_list(keyword='celular', minPrice=200)['code'], 200)
+
     def test_find_product_setting_maxPrice_must_return_200(self):
-        self.assertEquals(self.b.find_product_list(keyword='celular', maxPrice=1200.50)['code'],200)    
+        self.assertEquals(self.b.find_product_list(keyword='celular', maxPrice=1200.50)['code'], 200)
 
     def test_find_product_setting_minPrice_and_maxPrice_must_return_200(self):
-        self.assertEquals(self.b.find_product_list(keyword='celular', minPrice=344.90, maxPrice=1200.50)['code'],200) 
-  
-    def test_find_product_using_lomadee_must_return_200(self):
-        self.assertEquals(self.b.find_product_list(keyword='celular', lomadee=True)['code'],200)        
-  
-    def test_find_product_setting_all_variables(self):
-        self.assertEquals(self.b.find_product_list(keyword='celular', categoryID=0, format='json',page=3, results=20, minPrice=344.90, maxPrice=1200.50)['code'],200)         
-   
+        self.assertEquals(self.b.find_product_list(keyword='celular', minPrice=344.90, maxPrice=1200.50)['code'],200)
 
+    def test_find_product_using_lomadee_must_return_200(self):
+        self.assertEquals(self.b.find_product_list(keyword='celular', lomadee=True)['code'],200)
+
+    def test_find_product_setting_all_variables(self):
+        self.assertEquals(self.b.find_product_list(keyword='celular', categoryID=0, format='json',page=3, results=20, minPrice=344.90, maxPrice=1200.50)['code'],200)
 
     def test_create_source_id_sourceName_cannot_be_None(self):
         self.assertRaisesMessage(ValueError, 'sourceName option must be specified',self.b.create_source_id)
 
     def test_create_source_id_format_must_be_xml_or_json(self):
-         self.assertRaisesMessage(ValueError, 'the return format must be XML or JSON',self.b.create_source_id, format='letter')             
+         self.assertRaisesMessage(ValueError, 'the return format must be XML or JSON',self.b.create_source_id, format='letter')
 
     def test_create_source_id_publisherID_cannot_be_None(self):
         self.assertRaisesMessage(ValueError, 'publisherID option must be specified',self.b.create_source_id, sourceName='xxx')

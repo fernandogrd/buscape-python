@@ -51,18 +51,27 @@ class BuscapeTest(unittest.TestCase):
         app.set_sandbox()
         self.assertRaisesMessage(HTTPError, 'The request requires user authentication',app.find_category_list, keyword='xxx')
 
-    def test_find_category_parameters_cannot_be_none(self):
-        self.assertRaisesMessage(ValueError, 'keyword or categoryID option must be specified',self.b.find_category_list)         
+    def test_validate_categoryID(self):
+        self.assertRaisesMessage(
+            AssertionError,
+            'categoryID must be int',
+            self.b._validate_categoryID,
+            'teste'
+        )
 
-    def test_find_category_parameters_cannot_be_blank(self):
-        self.assertRaisesMessage(ValueError, 'keyword or categoryID option must be specified',self.b.find_category_list, keyword='', categoryID='')   
+        self.assertRaisesMessage(
+            ValueError,
+            'categoryID must be positive',
+            self.b._validate_categoryID,
+            -20
+        )
 
-    def test_find_category_parameter_keyword_cannot_be_blank(self):
-        self.assertRaisesMessage(ValueError, 'keyword or categoryID option must be specified',self.b.find_category_list, keyword='')   
- 
-    def test_find_category_parameter_categoryid_cannot_be_blank(self):
-        self.assertRaisesMessage(ValueError, 'keyword or categoryID option must be specified',self.b.find_category_list, categoryID='')    
-    
+        self.assertEqual(self.b._validate_categoryID(10), None)
+
+    def test_find_category_parameters_must_be_int(self):
+        self.assertRaisesMessage(ValueError, 'keyword or categoryID option must be specified', self.b.find_category_list)
+        self.assertRaisesMessage(ValueError, 'keyword or categoryID option must be specified', self.b.find_category_list, keyword='')
+
     def test_find_category_both_parameters_are_not_accepted(self):
         self.assertRaisesMessage(ValueError, 'you must specify only keyword or categoryID. Both values aren\'t accepted',self.b.find_category_list, keyword='xxx', categoryID=999)
 

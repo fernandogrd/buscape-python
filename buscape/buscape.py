@@ -142,6 +142,13 @@ class Buscape():
 
         return params
 
+    def _validate_categoryID(self, categoryID):
+        if categoryID is not None:
+            if not isinstance(categoryID, int):
+                raise AssertionError('categoryID must be int')
+            if categoryID < 0:
+                raise ValueError('categoryID must be positive')
+
     def set_sandbox(self):
         """
         Define the environment test
@@ -155,28 +162,23 @@ class Buscape():
         ofertas informando apenas um ID de categoria.
         """
 
-        if format.upper() not in ["XML", "JSON"]:
-            raise ValueError("the return format must be XML or JSON")
-
-        if not keyword and categoryID != 0:
-            # categoryID != 0 valida para categoryID == 0 e not
-            # categoryID invalida para todos os valores Falsos. 
-            if categoryID < 0 or not categoryID:
-                raise ValueError("keyword or categoryID option must be "
-                                 "specified")
+        if not keyword and categoryID is None:
+            raise ValueError("keyword or categoryID option must be specified")
         elif keyword and categoryID:
             raise ValueError("you must specify only keyword or categoryID. "
                              "Both values aren't accepted")
 
+        self._validate_categoryID(categoryID)
+        params = self.__default_filter(format=format)
+
         if keyword:
-            parameter = "keyword=%s" % keyword
+            params['keyword'] = keyword
         else:
-            parameter = "categoryId=%s" % categoryID
+            params['categoryID'] = categoryID
 
-        parameter = parameter + "&format=%s" % (format)
+        parameter = urlencode(params)
 
-        ret = self.__search(method='findCategoryList', parameter=parameter)
-        return ret
+        return self.__search(method='findCategoryList', parameter=parameter)
 
     def find_product_list(self, keyword=None, categoryID=None, format='XML',
                           lomadee=False, results=10, page=1, minPrice=None,
@@ -189,13 +191,7 @@ class Buscape():
         if keyword is None and categoryID is None:
             raise ValueError("keyword or categoryID option must be specified")
 
-        if categoryID is not None:
-            if not isinstance(categoryID, int):
-                raise AssertionError('categoryID must be int')
-            if categoryID < 0:
-                raise ValueError('categoryID must be positive')
-
-
+        self._validate_categoryID(categoryID)
         params = self.__default_filter(format, results, page, minPrice,
                                   maxPrice, sort, medal)
 
@@ -264,6 +260,7 @@ class Buscape():
         utilizando o id da categoria final ou um conjunto de palavras-chaves
         ou ambos.
         """
+        self._validate_categoryID(categoryID)
         params = self.__default_filter(format, results, page, priceMin,
                                        priceMax, sort, medal)
 
@@ -272,23 +269,20 @@ class Buscape():
         else:
             method = 'findOfferList'
 
-        if categoryID >= 0 and keyword:
-            parameter = "categoryId=%s&keyword=%s" % (categoryID, keyword)
-        elif categoryID >= 0:
-            parameter = "categoryId=%s" % (categoryID)
-        elif keyword:
-            parameter = "keyword=%s" % (keyword)
-        elif barcode:
-            parameter = "barcode=%s" % (barcode)
-        elif productID:
-            parameter = "productId=%s" % (productID)
+        if keyword is not None and categoryID is not None:
+            params.update({'keyword': keyword, 'categoryID': categoryID})
+        elif categoryID is not None:
+            params['categoryID']  = categoryID
+        elif productID is not None:
+            params['productID'] = productID
+        elif barcode is not None:
+            params['barcode'] = barcode
+        elif keyword is not None:
+            params['keyword'] = keyword
         else:
             raise ValueError("One parameter must be especified")
 
-
-        #Montando o filtro
-
-        parameter = parameter + "&format=%s" % (format)
+        parameter = urlencode(params)
 
         return self.__search(method=method, parameter=parameter)
 

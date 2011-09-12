@@ -174,7 +174,7 @@ class Buscape():
         if keyword:
             params['keyword'] = keyword
         else:
-            params['categoryID'] = categoryID
+            params['categoryId'] = categoryID
 
         parameter = urlencode(params)
 
@@ -198,7 +198,7 @@ class Buscape():
         if keyword:
             params['keyword'] = keyword
         if categoryID:
-            params['categoryID'] = categoryID
+            params['categoryId'] = categoryID
 
         if lomadee:
             method = "findProductList/lomadee"
@@ -222,34 +222,30 @@ class Buscape():
         mesmo sourceId para os testes do Developer.
         """
 
-        if format.upper() not in ["XML", "JSON"]:
-            raise ValueError("the return format must be XML or JSON")
+        params = self.__default_filter(format=format)
 
-        if sourceName is None:
+        if not sourceName:
             raise ValueError("sourceName option must be specified")
 
-        if publisherID is None:
+        if not publisherID:
             raise ValueError("publisherID option must be specified")
 
-        if siteID is None:
+        if not siteID:
             raise ValueError("siteID option must be specified")
 
-        if token is None:
+        if not token:
             raise ValueError("token option must be specified")
 
+        params.update({'sourceName': sourceName, 'publisherId': publisherID,
+                       'siteId': siteID, 'token': token})
+
         if campaignList:
-            parameter = ("sourceName=%s&publisherId=%s&siteId=%s&"
-                         "campaignList=%s&token=%s&format=%s" %
-                         (sourceName, publisherID, siteID, campaignList, token,
-                         format))
-        else:
-            parameter = ("sourceName=%s&publisherId=%s&siteId=%s&token=%s&"
-                         "format=%s" % (sourceName, publisherID, siteID,
-                         token, format))
+            params['campaignList'] = campaignList
 
-        ret = self.__search(method='createSource/lomadee', parameter=parameter)
+        parameter = urlencode(params)
 
-        return ret
+        return self.__search(method='createSource/lomadee', parameter=parameter)
+
 
     def find_offer_list(self, categoryID=None, productID=None, barcode=None,
                         keyword=None, lomadee=False, format="XML",
@@ -270,9 +266,9 @@ class Buscape():
             method = 'findOfferList'
 
         if keyword is not None and categoryID is not None:
-            params.update({'keyword': keyword, 'categoryID': categoryID})
+            params.update({'keyword': keyword, 'categoryId': categoryID})
         elif categoryID is not None:
-            params['categoryID']  = categoryID
+            params['categoryId']  = categoryID
         elif productID is not None:
             params['productID'] = productID
         elif barcode is not None:

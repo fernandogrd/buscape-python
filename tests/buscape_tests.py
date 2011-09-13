@@ -68,19 +68,21 @@ class BuscapeTest(unittest.TestCase):
 
         self.assertEqual(self.b._validate_categoryID(10), None)
 
+    def test_default_filter(self):
+        default_filter = self.b._Buscape__default_filter
+        self.assertRaisesMessage(
+            ValueError,
+            'the return format must be XML or JSON',
+            default_filter,
+            format=''
+        )
+
     def test_find_category_parameters_must_be_int(self):
         self.assertRaisesMessage(ValueError, 'keyword or categoryID option must be specified', self.b.find_category_list)
         self.assertRaisesMessage(ValueError, 'keyword or categoryID option must be specified', self.b.find_category_list, keyword='')
 
     def test_find_category_both_parameters_are_not_accepted(self):
         self.assertRaisesMessage(ValueError, 'you must specify only keyword or categoryID. Both values aren\'t accepted',self.b.find_category_list, keyword='xxx', categoryID=999)
-
-
-    def test_find_category_parameter_format_cannot_be_blank(self):
-         self.assertRaisesMessage(ValueError, 'the return format must be XML or JSON',self.b.find_category_list, keyword='xxx', format='')       
-         
-    def test_find_category_parameter_format_must_be_json_or_xml(self):
-        self.assertRaisesMessage(ValueError, 'the return format must be XML or JSON',self.b.find_category_list, keyword='xxx', format='letter')               
 
     def test_find_category_parameter_format_must_be_case_insensitive(self):
         self.assertEquals(self.b.find_category_list(categoryID=0, format='json')['code'],200)             
@@ -124,9 +126,6 @@ class BuscapeTest(unittest.TestCase):
 
     def test_find_product_both_keywork_and_categoryid_parameter_must_return_data(self):
         self.assertTrue(self.b.find_product_list(keyword='celular',categoryID=0)['data'] is not None)
-
-    def test_find_product_format_must_be_xml_or_json(self):
-         self.assertRaisesMessage(ValueError, 'the return format must be XML or JSON',self.b.find_product_list,categoryID=0, format='letter')
 
     def test_find_product_format_must_be_case_insensitive(self):
        self.assertEquals(self.b.find_product_list(categoryID=0, format='json')['code'],200)  
@@ -198,9 +197,6 @@ class BuscapeTest(unittest.TestCase):
     def test_create_source_id_sourceName_cannot_be_None(self):
         self.assertRaisesMessage(ValueError, 'sourceName option must be specified',self.b.create_source_id)
 
-    def test_create_source_id_format_must_be_xml_or_json(self):
-         self.assertRaisesMessage(ValueError, 'the return format must be XML or JSON',self.b.create_source_id, format='letter')
-
     def test_create_source_id_publisherID_cannot_be_None(self):
         self.assertRaisesMessage(ValueError, 'publisherID option must be specified',self.b.create_source_id, sourceName='xxx')
 
@@ -216,11 +212,6 @@ class BuscapeTest(unittest.TestCase):
     def test_create_source_id_without_use_campaignList_as_parameter_must_return_code_200(self):
         self.assertEquals(self.b.create_source_id(sourceName='xxx', publisherID='abc', siteID='def', token='ghi')['code'],200)
 
-
-
-    def test_find_offer_list_format_must_be_xml_or_json(self):
-         self.assertRaisesMessage(ValueError, 'the return format must be XML or JSON',self.b.find_offer_list, format='letter')      
-        
     def test_find_offer_list_at_least_one_parameter_must_be_specified(self):
          self.assertRaisesMessage(ValueError, 'One parameter must be especified',self.b.find_offer_list)                  
  
@@ -251,36 +242,19 @@ class BuscapeTest(unittest.TestCase):
     def test_find_offer_list_using_all_parameters_must_return_200(self):
          self.assertEquals(self.b.find_offer_list(keyword='xpto', lomadee=True, results=10, page=1, priceMin=0.1, priceMax=10.00, sort='price', medal='gold')['code'],200)    
 
-
-    def test_top_products_format_must_be_xml_or_json(self):
-         self.assertRaisesMessage(ValueError, 'the return format must be XML or JSON',self.b.top_products, format='letter')      
-
     def test_top_products_must_return_200(self):
          self.assertEquals(self.b.top_products(filterID='x', valueID='y')['code'],200)    
- 
-
-    def test_view_product_details_format_must_be_xml_or_json(self):
-         self.assertRaisesMessage(ValueError, 'the return format must be XML or JSON',self.b.view_product_details, format='letter')      
-
     def test_view_product_details_productID_must_be_valid(self):
          self.assertRaisesMessage(ValueError, 'productID option must be specified',self.b.view_product_details)                 
+
     def test_view_product_details_must_return_200(self):
          self.assertEquals(self.b.view_product_details(productID='y')['code'],200)   
-
-
-    def test_view_seller_details_format_must_be_xml_or_json(self):
-         self.assertRaisesMessage(ValueError, 'the return format must be XML or JSON',self.b.view_seller_details, format='letter')      
-
     def test_view_seller_details_productID_must_be_valid(self):
          self.assertRaisesMessage(ValueError, 'sellerID option must be specified',self.b.view_seller_details)                
          
     def test_view_seller_details_must_return_200(self):
          self.assertEquals(self.b.view_seller_details(sellerID='y')['code'],200)    
       
-
-    def test_view_user_ratings_format_must_be_xml_or_json(self):
-         self.assertRaisesMessage(ValueError, 'the return format must be XML or JSON',self.b.view_user_ratings, format='letter')  
-         
     def test_view_user_ratings_productID_must_be_valid(self):
          self.assertRaisesMessage(ValueError, 'productID option must be specified',self.b.view_user_ratings)                       
     def test_view_user_ratings_must_return_200(self):

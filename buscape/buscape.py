@@ -80,11 +80,13 @@ class Buscape():
         if format.upper() not in ["XML", "JSON"]:
             raise ValueError("the return format must be XML or JSON")
 
-        if results not in range(1, 999):
-            raise ValueError("results must be a integer between 1 and 999")
+        if results is not None:
+            if not isinstance(results, int) or not (0 < results < 999):
+                raise ValueError('results must be a integer between 1 and 999')
 
-        if page not in range(1, 999):
-            raise ValueError("page number must be a integer between 1 and 999")
+        if page is not None:
+            if not isinstance(page, int) or not (0 < page < 999):
+                raise ValueError('page must be a integer between 1 and 999')
 
         if priceMin is not None:
             try:

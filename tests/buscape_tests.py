@@ -70,11 +70,42 @@ class BuscapeTest(unittest.TestCase):
 
     def test_default_filter(self):
         default_filter = self.b._Buscape__default_filter
+        # Format
         self.assertRaisesMessage(
             ValueError,
             'the return format must be XML or JSON',
             default_filter,
             format=''
+        )
+
+        # Results
+        self.assertRaisesMessage(
+            ValueError,
+            'results must be a integer between 1 and 999',
+            default_filter,
+            results=''
+        )
+
+        self.assertRaisesMessage(
+            ValueError,
+            'results must be a integer between 1 and 999',
+            default_filter,
+            results=1000
+        )
+
+        # Page
+        self.assertRaisesMessage(
+            ValueError,
+            'page must be a integer between 1 and 999',
+            default_filter,
+            page=1000
+        )
+
+        self.assertRaisesMessage(
+            ValueError,
+            'page must be a integer between 1 and 999',
+            default_filter,
+            page=''
         )
 
     def test_find_category_parameters_must_be_int(self):
@@ -131,33 +162,11 @@ class BuscapeTest(unittest.TestCase):
        self.assertEquals(self.b.find_product_list(categoryID=0, format='json')['code'],200)  
 
 
-    def test_find_product_results_cannot_be_none(self):
-        self.assertRaisesMessage(ValueError, 'results must be a integer between 1 and 999',self.b.find_product_list,categoryID=0, results=None)  
-       
-    def test_find_product_results_cannot_be_less_than_1(self):
-        self.assertRaisesMessage(ValueError, 'results must be a integer between 1 and 999',self.b.find_product_list,categoryID=0, results=0)  
-        
-    def test_find_product_results_cannot_be_greater_than_1(self):
-        self.assertRaisesMessage(ValueError, 'results must be a integer between 1 and 999',self.b.find_product_list,categoryID=0, results=1000)
-    
-    def test_find_product_results_must_be_a_valid_integer(self):
-        self.assertRaisesMessage(ValueError, 'results must be a integer between 1 and 999',self.b.find_product_list,categoryID=0, results=1000) 
     
     def test_find_product_results_must_be_between_1_and_999(self):
         self.assertEquals(self.b.find_product_list(categoryID=0, results=20)['code'],200)  
 
 
-    def test_find_product_page_cannot_be_none(self):
-        self.assertRaisesMessage(ValueError, 'page number must be a integer between 1 and 999',self.b.find_product_list,categoryID=0, page=None)          
-        
-    def test_find_product_page_cannot_be_less_than_1(self):
-        self.assertRaisesMessage(ValueError, 'page number must be a integer between 1 and 999',self.b.find_product_list,categoryID=0, page=0)  
-        
-    def test_find_product_page_cannot_be_greater_than_1(self):
-        self.assertRaisesMessage(ValueError, 'page number must be a integer between 1 and 999',self.b.find_product_list,categoryID=0, page=1000)
-
-    def test_find_product_page_must_be_a_valid_integer(self):
-        self.assertRaisesMessage(ValueError, 'page number must be a integer between 1 and 999',self.b.find_product_list,categoryID=0, page='A')
 
     def test_find_product_page_must_be_between_1_and_999(self):
         self.assertEquals(self.b.find_product_list(categoryID=0, page=20)['code'],200)

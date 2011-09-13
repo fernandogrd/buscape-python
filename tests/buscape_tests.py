@@ -70,7 +70,7 @@ class BuscapeTest(unittest.TestCase):
 
     def test_default_filter(self):
         default_filter = self.b._Buscape__default_filter
-        # Format
+        # format
         self.assertRaisesMessage(
             ValueError,
             'the return format must be XML or JSON',
@@ -78,7 +78,7 @@ class BuscapeTest(unittest.TestCase):
             format=''
         )
 
-        # Results
+        # results
         self.assertRaisesMessage(
             ValueError,
             'results must be a integer between 1 and 999',
@@ -93,7 +93,7 @@ class BuscapeTest(unittest.TestCase):
             results=1000
         )
 
-        # Page
+        # page
         self.assertRaisesMessage(
             ValueError,
             'page must be a integer between 1 and 999',
@@ -106,6 +106,28 @@ class BuscapeTest(unittest.TestCase):
             'page must be a integer between 1 and 999',
             default_filter,
             page=''
+        )
+
+        # priceMin
+        self.assertRaisesMessage(
+            AssertionError, 
+            'priceMin must be a float',
+            default_filter,
+            minPrice=''
+        )
+
+        self.assertRaisesMessage(
+            TypeError,
+            'priceMin must be a float',
+            default_filter,
+            minPrice={}
+        )
+
+        self.assertRaisesMessage(
+            ValueError,
+            'priceMin cannot be negative.',
+            default_filter,
+            minPrice=-0.1
         )
 
     def test_find_category_parameters_must_be_int(self):
@@ -171,12 +193,6 @@ class BuscapeTest(unittest.TestCase):
     def test_find_product_page_must_be_between_1_and_999(self):
         self.assertEquals(self.b.find_product_list(categoryID=0, page=20)['code'],200)
 
-    def test_find_product_minPrice_must_be_float(self):
-        self.assertRaisesMessage(AssertionError, 'priceMin must be a float', self.b.find_product_list, categoryID=0, minPrice='')
-        self.assertRaisesMessage(TypeError, 'priceMin must be a float', self.b.find_product_list, categoryID=0, minPrice={})
-
-    def test_find_product_minPrice_cannot_be_less_than_zero(self):
-        self.assertRaisesMessage(ValueError, 'priceMin cannot be negative.',self.b.find_product_list,categoryID=0, minPrice=-0.1)
 
     def test_find_product_maxPrice_must_be_float(self):
         self.assertRaisesMessage(AssertionError, 'priceMax must be a float', self.b.find_product_list, categoryID=0, maxPrice='')

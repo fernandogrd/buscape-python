@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import unittest
 from unittest import TestSuite
 from urllib2 import URLError, HTTPError
@@ -45,7 +46,7 @@ class BuscapeTest(unittest.TestCase):
         self.assertRaises(self.failureException, self.assertRaisesMessage, Exception, 'Not correct', _raise, Exception('Error') )
 
 
-class BuscapeExceptionTest(BuscapeTest):
+class BuscapeFastTest(BuscapeTest):
 
     def test_applicationid_cannot_be_none(self):
         self.assertRaisesMessage(ValueError, 'User ID must be specified', Buscape)
@@ -176,6 +177,16 @@ class BuscapeExceptionTest(BuscapeTest):
             'The value in the medal parameter is not valid',
             default_filter,
             medal='stone'
+        )
+
+        # Teste retorno válido
+        self.assertEqual(
+            default_filter(
+                format='json', results=22, page=2, priceMin=1.0, priceMax=20.0,
+                sort='price', medal='gold'
+            ),
+            {'sort': 'price', 'format': 'json', 'results': 22, 'page': 2,
+            'priceMax': 20.0, 'medal': None, 'priceMin': 1.0}
         )
 
 
@@ -331,7 +342,7 @@ class BuscapeRequestTest(BuscapeTest):
         self.assertEquals(self.b.find_category_list(categoryID=0, format='json')['code'],200)
 
 def suite_exception():
-    return unittest.makeSuite(BuscapeExceptionTest, 'test')
+    return unittest.makeSuite(BuscapeFastTest, 'test')
 
 def suite_request():
     return unittest.makeSuite(BuscapeRequestTest, 'test')

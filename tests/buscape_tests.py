@@ -170,6 +170,15 @@ class BuscapeExceptionTest(BuscapeTest):
             sort='reverse'
         )
 
+        # Medal
+        self.assertRaisesMessage(
+            ValueError,
+            'The value in the medal parameter is not valid',
+            default_filter,
+            medal='stone'
+        )
+
+
     def test_find_category_parameters_must_be_int(self):
         self.assertRaisesMessage(ValueError, 'keyword or categoryID option must be specified', self.b.find_category_list)
         self.assertRaisesMessage(ValueError, 'keyword or categoryID option must be specified', self.b.find_category_list, keyword='')
@@ -201,10 +210,6 @@ class BuscapeExceptionTest(BuscapeTest):
 
     def test_find_offer_list_at_least_one_parameter_must_be_specified(self):
          self.assertRaisesMessage(ValueError, 'One parameter must be especified',self.b.find_offer_list)
-
-
-    def test_find_offer_list_medal_value_must_be_valid(self):
-         self.assertRaisesMessage(ValueError, 'The value in the medal parameter is not valid',self.b.find_offer_list,keyword='xpto', medal='stone')
 
     def test_view_product_details_productID_must_be_valid(self):
          self.assertRaisesMessage(ValueError, 'productID option must be specified',self.b.view_product_details)

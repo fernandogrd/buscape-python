@@ -155,6 +155,21 @@ class BuscapeExceptionTest(BuscapeTest):
             priceMax=-0.1
         )
 
+        self.assertRaisesMessage(
+            ValueError,
+            'priceMax must be greater then priceMin',
+            default_filter,
+            priceMin=1, priceMax=0.9
+        )
+
+        # Sort
+        self.assertRaisesMessage(
+            ValueError,
+            'The value in the sort parameter is not valid',
+            default_filter,
+            sort='reverse'
+        )
+
     def test_find_category_parameters_must_be_int(self):
         self.assertRaisesMessage(ValueError, 'keyword or categoryID option must be specified', self.b.find_category_list)
         self.assertRaisesMessage(ValueError, 'keyword or categoryID option must be specified', self.b.find_category_list, keyword='')
@@ -172,11 +187,6 @@ class BuscapeExceptionTest(BuscapeTest):
         self.assertRaisesMessage(AssertionError, 'categoryID must be int', self.b.find_product_list,keyword='',categoryID='')
         self.assertRaisesMessage(ValueError, 'categoryID must be positive', self.b.find_product_list, categoryID=-1)
 
-
-    def test_find_product_minPrice_cannot_greater_than_maxPrice(self):
-        self.assertRaisesMessage(ValueError, 'priceMax must be greater then priceMin', self.b.find_product_list,categoryID=0, minPrice=1, maxPrice=0.9)
-
-
     def test_create_source_id_sourceName_cannot_be_None(self):
         self.assertRaisesMessage(ValueError, 'sourceName option must be specified',self.b.create_source_id)
 
@@ -192,8 +202,6 @@ class BuscapeExceptionTest(BuscapeTest):
     def test_find_offer_list_at_least_one_parameter_must_be_specified(self):
          self.assertRaisesMessage(ValueError, 'One parameter must be especified',self.b.find_offer_list)
 
-    def test_find_offer_list_sort_value_must_be_valid(self):
-         self.assertRaisesMessage(ValueError, 'The value in the sort parameter is not valid',self.b.find_offer_list,keyword='xpto', sort='reverse')
 
     def test_find_offer_list_medal_value_must_be_valid(self):
          self.assertRaisesMessage(ValueError, 'The value in the medal parameter is not valid',self.b.find_offer_list,keyword='xpto', medal='stone')
@@ -317,9 +325,11 @@ class BuscapeRequestTest(BuscapeTest):
     def test_find_category_parameter_format_must_be_case_insensitive(self):
         self.assertEquals(self.b.find_category_list(categoryID=0, format='json')['code'],200)
 
-def suite():
+def suite_exception():
     return unittest.makeSuite(BuscapeExceptionTest, 'test')
 
+def suite_request():
+    return unittest.makeSuite(BuscapeRequestTest, 'test')
 
 if __name__ == '__main__':
     unittest.main()

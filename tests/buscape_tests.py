@@ -208,7 +208,7 @@ class BuscapeFastTest(BuscapeTest):
         self.assertRaisesMessage(
             ValueError,
             'you must specify only keyword or categoryID. Both values aren\'t'
-            'accepted',
+            ' accepted',
             self.b.find_category_list,
             keyword='xxx', categoryID=999
         )
@@ -287,7 +287,7 @@ class BuscapeFastTest(BuscapeTest):
         self.assertRaisesMessage(
             ValueError,
             'sellerID option must be specified',
-            self.b.view_seller_detail
+            self.b.view_seller_details
         )
 
     def test_view_user_ratings_productID_must_be_valid(self):
@@ -349,7 +349,7 @@ class BuscapeRequestTest(BuscapeTest):
         self.assertEquals(code, 200)
 
     def test_top_products_must_return_200(self):
-        code = self.b.top_products(filterID='x', valueID='y')['code']
+        code = self.b.top_products()['code']
         self.assertEquals(code, 200)
 
     def test_find_offer_list_using_barcode_must_return_200(self):

@@ -285,25 +285,20 @@ class Buscape():
         return self.__search(method=method, parameter=parameter)
 
 
-    def top_products(self, format="XML", filterID=None, valueID=None):
+    def top_products(self, format="XML", results=10, page=1, priceMin=None,
+                     priceMax=None, sort=None, medal=None):
+
         """
         Método que retorna os produtos mais populares do BuscaPé.
         """
 
-        if format.upper() not in ["XML", "JSON"]:
-            raise ValueError("the return format must be XML or JSON")
-
+        params = self.__default_filter(format, results, page, priceMin,
+                                       priceMax, sort, medal)
         method = "topProducts"
 
-        parameter = "format=%s" % (format)
+        parameter = urlencode(params)
 
-        #Montando o filtro
-        if filterID and valueID:
-            parameter = parameter + "&specId%s=%s" % (filterID, valueID)
-
-        ret = self.__search(method=method, parameter=parameter)
-
-        return ret
+        return self.__search(method=method, parameter=parameter)
 
     def view_product_details(self, productID=None, format="XML"):
         """

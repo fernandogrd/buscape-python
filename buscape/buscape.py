@@ -304,13 +304,13 @@ class Buscape():
         """
         Método retorna os detalhes técnicos de um determinado produto.
         """
-        params = self.__default_filter(format=format)
-
         if not productID:
             raise ValueError('productID option must be specified')
 
         method = "viewProductDetails"
 
+        params = self.__default_filter(format=format)
+        params['productId'] = productID
         parameter = urlencode(params)
 
         return self.__search(method=method, parameter=parameter)
@@ -320,20 +320,16 @@ class Buscape():
         Método que retorna os detalhes de uma loja ou empresa como:
         endereços, telefones de contato e etc.
         """
-
-        if format.upper() not in ["XML", "JSON"]:
-            raise ValueError("the return format must be XML or JSON")
-
         if not sellerID:
             raise ValueError("sellerID option must be specified")
 
         method = "viewSellerDetails"
 
-        parameter = "sellerId=%s&format=%s" % (sellerID, format)
+        params = self.__default_filter(format=format)
+        params['sellerId'] = sellerID
+        parameter = urlencode(params)
 
-        ret = self.__search(method=method, parameter=parameter)
-
-        return ret
+        return self.__search(method=method, parameter=parameter)
 
     def view_user_ratings(self, productID=None, format="XML"):
         """

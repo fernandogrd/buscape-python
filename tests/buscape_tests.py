@@ -191,11 +191,27 @@ class BuscapeFastTest(BuscapeTest):
 
 
     def test_find_category_parameters_must_be_int(self):
-        self.assertRaisesMessage(ValueError, 'keyword or categoryID option must be specified', self.b.find_category_list)
-        self.assertRaisesMessage(ValueError, 'keyword or categoryID option must be specified', self.b.find_category_list, keyword='')
+        self.assertRaisesMessage(
+            ValueError,
+            'keyword or categoryID option must be specified',
+            self.b.find_category_list
+        )
+
+        self.assertRaisesMessage(
+            ValueError,
+            'keyword or categoryID option must be specified',
+            self.b.find_category_list,
+            keyword=''
+        )
 
     def test_find_category_both_parameters_are_not_accepted(self):
-        self.assertRaisesMessage(ValueError, 'you must specify only keyword or categoryID. Both values aren\'t accepted',self.b.find_category_list, keyword='xxx', categoryID=999)
+        self.assertRaisesMessage(
+            ValueError,
+            'you must specify only keyword or categoryID. Both values aren\'t'
+            'accepted',
+            self.b.find_category_list,
+            keyword='xxx', categoryID=999
+        )
 
     """
     def test_find_category_if_no_connection_should_raise_no_connection_error(self):
@@ -203,145 +219,299 @@ class BuscapeFastTest(BuscapeTest):
     """
 
     def test_find_product_parameters_must_exists(self):
-        self.assertRaisesMessage(ValueError, 'keyword or categoryID option must be specified', self.b.find_product_list)
-        self.assertRaisesMessage(AssertionError, 'categoryID must be int', self.b.find_product_list,keyword='',categoryID='')
-        self.assertRaisesMessage(ValueError, 'categoryID must be positive', self.b.find_product_list, categoryID=-1)
+        self.assertRaisesMessage(
+            ValueError,
+            'keyword or categoryID option must be specified',
+            self.b.find_product_list
+        )
+
+        self.assertRaisesMessage(
+            AssertionError,
+            'categoryID must be int',
+            self.b.find_product_list,
+            keyword='', categoryID=''
+        )
+
+        self.assertRaisesMessage(
+            ValueError,
+            'categoryID must be positive',
+            self.b.find_product_list,
+            categoryID=-1
+        )
 
     def test_create_source_id_sourceName_cannot_be_None(self):
-        self.assertRaisesMessage(ValueError, 'sourceName option must be specified',self.b.create_source_id)
+        self.assertRaisesMessage(
+            ValueError,
+            'sourceName option must be specified',
+            self.b.create_source_id
+        )
 
     def test_create_source_id_publisherID_cannot_be_None(self):
-        self.assertRaisesMessage(ValueError, 'publisherID option must be specified',self.b.create_source_id, sourceName='xxx')
+        self.assertRaisesMessage(
+            ValueError,
+            'publisherID option must be specified',
+            self.b.create_source_id, sourceName='xxx'
+        )
 
     def test_create_source_id_siteID_cannot_be_None(self):
-        self.assertRaisesMessage(ValueError, 'siteID option must be specified',self.b.create_source_id, sourceName='xxx', publisherID='abc')
+        self.assertRaisesMessage(
+            ValueError,
+            'siteID option must be specified',
+            self.b.create_source_id,
+            sourceName='xxx', publisherID='abc'
+        )
 
     def test_create_source_id_token_cannot_be_None(self):
-        self.assertRaisesMessage(ValueError, 'token option must be specified',self.b.create_source_id, sourceName='xxx', publisherID='abc', siteID='def')
+        self.assertRaisesMessage(
+            ValueError,
+            'token option must be specified',
+            self.b.create_source_id,
+            sourceName='xxx', publisherID='abc', siteID='def'
+        )
 
     def test_find_offer_list_at_least_one_parameter_must_be_specified(self):
-         self.assertRaisesMessage(ValueError, 'One parameter must be especified',self.b.find_offer_list)
+        self.assertRaisesMessage(
+            ValueError,
+            'One parameter must be especified',
+            self.b.find_offer_list
+        )
 
     def test_view_product_details_productID_must_be_valid(self):
-         self.assertRaisesMessage(ValueError, 'productID option must be specified',self.b.view_product_details)
+        self.assertRaisesMessage(
+            ValueError,
+            'productID option must be specified',
+            self.b.view_product_details
+        )
 
     def test_view_seller_details_productID_must_be_valid(self):
-         self.assertRaisesMessage(ValueError, 'sellerID option must be specified',self.b.view_seller_details)
+        self.assertRaisesMessage(
+            ValueError,
+            'sellerID option must be specified',
+            self.b.view_seller_detail
+        )
 
     def test_view_user_ratings_productID_must_be_valid(self):
-         self.assertRaisesMessage(ValueError, 'productID option must be specified',self.b.view_user_ratings)
-
+        self.assertRaisesMessage(
+            ValueError,
+            'productID option must be specified',
+            self.b.view_user_ratings
+        )
 
 
 class BuscapeRequestTest(BuscapeTest):
 
     def test_application_has_not_been_approved(self):
         app = Buscape(applicationID=self.applicationID)
-        self.assertRaisesMessage(HTTPError, 'Your application is not approved yet',app.find_category_list, keyword='xxx')
+
+        self.assertRaisesMessage(
+            HTTPError,
+            'Your application is not approved yet',
+            app.find_category_list, keyword='xxx'
+        )
 
     def test_application_with_wrong_applicationID_and_country_None(self):
         app = Buscape(applicationID='xpto', country=None)
         app.set_sandbox()
-        self.assertRaisesMessage(HTTPError, 'The request requires user authentication',app.find_category_list, keyword='xxx')
+
+        self.assertRaisesMessage(
+            HTTPError,
+            'The request requires user authentication',
+            app.find_category_list,
+            keyword='xxx'
+        )
 
     def test_find_category_by_keyword_must_return_200(self):
-        self.assertEquals(self.b.find_category_list(keyword='LG')['code'],200)
+        code = self.b.find_category_list(keyword='LG')['code']
+        self.assertEquals(code, 200)
 
     def test_find_category_by_keyword_must_return_data(self):
-        self.assertTrue(self.b.find_category_list(keyword='LG')['data'] is not None)
+        data = self.b.find_category_list(keyword='LG')['data']
+        self.assertTrue(data is not None)
 
     def test_find_category_by_categoryId_must_return_200(self):
-         self.assertEquals(self.b.find_category_list(categoryID=0)['code'],200)
+        code = self.b.find_category_list(categoryID=0)['code']
+        self.assertEquals(code, 200)
 
     def test_find_category_by_categoryId_must_return_data(self):
-         self.assertTrue(self.b.find_category_list(categoryID=0)['data'] is not None)
+         data = self.b.find_category_list(categoryID=0)['data']
+         self.assertTrue(data is not None)
 
     def test_view_user_ratings_must_return_200(self):
-         self.assertEquals(self.b.view_user_ratings(productID='y')['code'],200)
-
+        code = self.b.view_user_ratings(productID='y')['code']
+        self.assertEquals(code, 200)
 
     def test_view_seller_details_must_return_200(self):
-         self.assertEquals(self.b.view_seller_details(sellerID='y')['code'],200)
+        code = self.b.view_seller_details(sellerID='y')['code']
+        self.assertEquals(code, 200)
 
     def test_view_product_details_must_return_200(self):
-         self.assertEquals(self.b.view_product_details(productID='y')['code'],200)
+        code = self.b.view_product_details(productID='y')['code']
+        self.assertEquals(code, 200)
 
     def test_top_products_must_return_200(self):
-         self.assertEquals(self.b.top_products(filterID='x', valueID='y')['code'],200)
+        code = self.b.top_products(filterID='x', valueID='y')['code']
+        self.assertEquals(code, 200)
 
     def test_find_offer_list_using_barcode_must_return_200(self):
-         self.assertEquals(self.b.find_offer_list(barcode='1234', sort='price', medal='gold')['code'],200)
+        offer_list = self.b.find_offer_list(
+            barcode='1234', sort='price', medal='gold'
+        )
+
+        code = offer_list['code']
+        self.assertEquals(code, 200)
 
     def test_find_offer_list_using_productID_must_return_200(self):
-         self.assertEquals(self.b.find_offer_list(productID='1234', sort='price', medal='gold')['code'],200)
+        offer_list = self.b.find_offer_list(
+            productID='1234', sort='price', medal='gold'
+        )
+
+        code = offer_list['code']
+        self.assertEquals(code ,200)
 
     def test_find_offer_list_using_lomadee_must_return_200(self):
-         self.assertEquals(self.b.find_offer_list(keyword='xpto', lomadee=True, sort='price', medal='gold')['code'],200)
+        offer_list = self.b.find_offer_list(
+            keyword='xpto', lomadee=True, sort='price', medal='gold'
+        )
+        code = offer_list['code']
+
+        self.assertEquals(code, 200)
 
     def test_find_offer_list_using_all_parameters_must_return_200(self):
-         self.assertEquals(self.b.find_offer_list(keyword='xpto', lomadee=True, results=10, page=1, priceMin=0.1, priceMax=10.00, sort='price', medal='gold')['code'],200)
+        offer_list = self.b.find_offer_list(
+            keyword='xpto', lomadee=True, results=10, page=1, priceMin=0.1,
+            priceMax=10.00, sort='price', medal='gold'
+        )
+
+        code = offer_list['code']
+        self.assertEquals(code, 200)
 
     def test_find_offer_list_using_keyword_must_return_200(self):
-         self.assertEquals(self.b.find_offer_list(keyword='xpto', sort='price', medal='gold')['code'],200)
+        offer_list = self.b.find_offer_list(
+            keyword='xpto', sort='price', medal='gold'
+        )
+        code = offer_list['code']
+
+        self.assertEquals(code, 200)
 
     def test_find_offer_list_using_categoryID_must_return_200(self):
-         self.assertEquals(self.b.find_offer_list(categoryID=0, sort='price', medal='gold')['code'],200)
+        offer_list = self.b.find_offer_list(
+            categoryID=0, sort='price', medal='gold'
+        )
+
+        code = offer_list['code']
+        self.assertEquals(code, 200)
 
     def test_find_offer_list_using_keword_and_categoryID_must_return_200(self):
-         self.assertEquals(self.b.find_offer_list(keyword='xpto', categoryID=0, sort='price', medal='gold')['code'],200)
+        offer_list = self.b.find_offer_list(
+            keyword='xpto', categoryID=0, sort='price', medal='gold'
+        )
+
+        code = offer_list['code']
+
+        self.assertEquals(code, 200)
 
     def test_create_source_id_use_campaignList_as_parameter_must_return_code_200(self):
-        self.assertEquals(self.b.create_source_id(sourceName='xxx', publisherID='abc', siteID='def', token='ghi', campaignList='jkl')['code'],200)
+        source_id = self.b.create_source_id(
+            sourceName='xxx', publisherID='abc', siteID='def', token='ghi', campaignList='jkl'
+        )
+
+        code = source_id['code']
+        self.assertEquals(code, 200)
 
     def test_create_source_id_without_use_campaignList_as_parameter_must_return_code_200(self):
-        self.assertEquals(self.b.create_source_id(sourceName='xxx', publisherID='abc', siteID='def', token='ghi')['code'],200)
+        source_id = self.b.create_source_id(
+            sourceName='xxx', publisherID='abc', siteID='def', token='ghi'
+        )
+
+        code = source_id['code']
+        self.assertEquals(code, 200)
 
     def test_find_product_setting_maxPrice_must_return_200(self):
-        self.assertEquals(self.b.find_product_list(keyword='celular', maxPrice=1200.50)['code'], 200)
+        find_product = self.b.find_product_list(
+            keyword='celular', maxPrice=1200.50
+        )
+
+        code = find_product['code']
+        self.assertEquals(code, 200)
 
     def test_find_product_setting_minPrice_and_maxPrice_must_return_200(self):
-        self.assertEquals(self.b.find_product_list(keyword='celular', minPrice=344.90, maxPrice=1200.50)['code'],200)
+        find_product = self.b.find_product_list(
+            keyword='celular', minPrice=344.90, maxPrice=1200.50
+        )
+
+        code = find_product['code']
+        self.assertEquals(code, 200)
 
     def test_find_product_using_lomadee_must_return_200(self):
-        self.assertEquals(self.b.find_product_list(keyword='celular', lomadee=True)['code'],200)
+        find_product = self.b.find_product_list(
+            keyword='celular', lomadee=True
+        )
+
+        code = find_product['code']
+        self.assertEquals(code, 200)
 
     def test_find_product_setting_all_variables(self):
-        self.assertEquals(self.b.find_product_list(keyword='celular', categoryID=0, format='json',page=3, results=20, minPrice=344.90, maxPrice=1200.50)['code'],200)
+        find_product = self.b.find_product_list(
+            keyword='celular', categoryID=0, format='json',page=3, results=20,
+            minPrice=344.90, maxPrice=1200.50
+        )
+
+        code = find_product['code']
+        self.assertEquals(code, 200)
 
     def test_find_product_setting_minPrice_must_return_200(self):
-        self.assertEquals(self.b.find_product_list(keyword='celular', minPrice=200)['code'], 200)
+        find_product = self.b.find_product_list(
+            keyword='celular', minPrice=200
+        )
+
+        code = find_product['code']
+        self.assertEquals(code, 200)
 
     def test_find_product_only_keyword_parameter_must_return_data(self):
-        self.assertTrue(self.b.find_product_list(keyword='celular')['data'] is not None)
+        data = self.b.find_product_list(keyword='celular')['data']
+        self.assertTrue(data is not None)
 
     def test_find_product_only_categoryid_parameter_must_return_200(self):
-        self.assertEquals(self.b.find_product_list(categoryID=0)['code'],200)
+        code = self.b.find_product_list(categoryID=0)['code']
+        self.assertEquals(code, 200)
 
     def test_find_product_only_categoryid_parameter_must_return_data(self):
-        self.assertTrue(self.b.find_product_list(categoryID=0)['data'] is not None)
+        data = self.b.find_product_list(categoryID=0)['data']
+        self.assertTrue(data is not None)
 
     def test_find_product_both_keywork_and_categoryid_parameter_must_return_200(self):
-        self.assertTrue(self.b.find_product_list(keyword='celular',categoryID=0)['code'],200)
+        find_product = self.b.find_product_list(
+            keyword='celular', categoryID=0
+        )
+
+        code = find_product['code']
+        self.assertTrue(code, 200)
 
     def test_find_product_both_keywork_and_categoryid_parameter_must_return_data(self):
-        self.assertTrue(self.b.find_product_list(keyword='celular',categoryID=0)['data'] is not None)
+        data = self.b.find_product_list(keyword='celular',categoryID=0)['data']
+        self.assertTrue(data is not None)
 
     def test_find_product_format_must_be_case_insensitive(self):
-       self.assertEquals(self.b.find_product_list(categoryID=0, format='json')['code'],200)
+        code = self.b.find_product_list(categoryID=0, format='json')['code']
+        self.assertEquals(code, 200)
 
     def test_find_product_results_must_be_between_1_and_999(self):
-        self.assertEquals(self.b.find_product_list(categoryID=0, results=20)['code'],200)
+        code = self.b.find_product_list(categoryID=0, results=20)['code']
+        self.assertEquals(code, 200)
 
     def test_find_product_page_must_be_between_1_and_999(self):
-        self.assertEquals(self.b.find_product_list(categoryID=0, page=20)['code'],200)
+        code = self.b.find_product_list(categoryID=0, page=20)['code']
+        self.assertEquals(code, 200)
 
     def test_find_product_only_keyword_parameter_must_return_200(self):
-        self.assertEquals(self.b.find_product_list(keyword='celular')['code'],200)
+        code = self.b.find_product_list(keyword='celular')['code']
+        self.assertEquals(code, 200)
 
     def test_find_category_parameter_format_must_be_case_insensitive(self):
-        self.assertEquals(self.b.find_category_list(categoryID=0, format='json')['code'],200)
+        code = self.b.find_category_list(categoryID=0, format='json')['code']
+        self.assertEquals(code, 200)
 
-def suite_exception():
+def suite_fast():
     return unittest.makeSuite(BuscapeFastTest, 'test')
 
 def suite_request():

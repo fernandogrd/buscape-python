@@ -321,11 +321,18 @@ class BuscapeFastTest(BuscapeTest):
             self.b.view_product_details,
         )
 
-    def test_view_seller_details_productID_must_be_valid(self):
+    def test_view_seller_details(self):
         self.assertRaisesMessage(
             ValueError,
             'sellerID option must be specified',
             self.b.view_seller_details,
+        )
+
+        self.assertRaisesMessage(
+            AssertionError,
+            'sellerID must be int',
+            self.b.view_seller_details,
+            sellerID='k',
         )
 
     def test_view_user_ratings_productID_must_be_valid(self):
@@ -377,21 +384,31 @@ class BuscapeRequestTest(BuscapeTest):
         data = self.b.find_category_list(categoryID=0)['data']
         self.assertTrue(data is not None)
 
-    def test_view_user_ratings_must_return_200(self):
-        code = self.b.view_user_ratings(productID='y')['code']
-        self.assertEquals(code, 200)
+    def test_view_user_ratings(self):
+        resp = self.b.view_user_ratings(productID='y')
+        code = self._get_code(resp)
+        self.assertEquals(code, 0)
 
-    def test_view_seller_details_must_return_200(self):
-        code = self.b.view_seller_details(sellerID='y')['code']
-        self.assertEquals(code, 200)
+    def test_view_seller_details(self):
+        resp = self.b.view_seller_details(sellerID=10)
+        code = self._get_code(resp)
+        self.assertEquals(code, 0)
 
-    def test_view_product_details_must_return_200(self):
-        code = self.b.view_product_details(productID='y')['code']
-        self.assertEquals(code, 200)
+    def test_view_product_details(self):
+        # Produto Inválido
+        resp = self.b.view_product_details(productID='y')
+        code = self._get_code(resp)
+        self.assertEquals(code, 101)
 
-    def test_top_products_must_return_200(self):
-        code = self.b.top_products()['code']
-        self.assertEquals(code, 200)
+        # Produto Válido
+        resp = self.b.view_product_details(productID='10')
+        code = self._get_code(resp)
+        self.assertEquals(code, 0)
+
+    def test_top_products(self):
+        resp = self.b.top_products()
+        code = self._get_code(resp)
+        self.assertEquals(code, 0)
 
     def test_find_offer_list_using_barcode_must_return_200(self):
         offer_list = self.b.find_offer_list(

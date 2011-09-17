@@ -37,7 +37,7 @@ class Buscape():
         try:
             resp = urlopen(url)
             data = resp.read()
-            return dict(code=resp.code, data=data)
+            return dict(code=resp.code, data=data, url=url)
         except HTTPError, e:
             if e.code == 401:
                 if self.environment == 'bws':
@@ -70,15 +70,17 @@ class Buscape():
         except URLError, e:
             raise e
 
-    def __default_filter(self, format='XML', results=10, page=1, priceMin=None,
+    def __default_filter(self, format=None, results=10, page=1, priceMin=None,
                          priceMax=None, sort=None, medal=None):
         '''
         Lista de produtos, lista de ofertas, lista de produtos populares,
         avaliação de usuários têm os mesmos parâmetros de filtro.
         Método para evitar repetição.
         '''
-        if format.upper() not in ["XML", "JSON"]:
-            raise ValueError("the return format must be XML or JSON")
+
+        if format is not None:
+            if format.upper() not in ["XML", "JSON"]:
+                raise ValueError("the return format must be XML or JSON")
         else:
             format = self.format
 
@@ -163,7 +165,7 @@ class Buscape():
         self.__default_filter(format=format)
         self.format = format
 
-    def find_category_list(self, keyword=None, categoryID=None, format='XML'):
+    def find_category_list(self, keyword=None, categoryID=None, format=None):
         """
         Método faz busca de categorias, permite que você exiba informações
         relativas às categorias. É possível obter categorias, produtos ou
@@ -188,7 +190,7 @@ class Buscape():
 
         return self.__search(method='findCategoryList', parameter=parameter)
 
-    def find_product_list(self, keyword=None, categoryID=None, format='XML',
+    def find_product_list(self, keyword=None, categoryID=None, format=None,
                           lomadee=False, results=10, page=1, minPrice=None,
                           maxPrice=None, sort=None, medal=None):
         """
@@ -218,7 +220,7 @@ class Buscape():
         return self.__search(method=method, parameter=parameter)
 
     def create_source_id(self, sourceName=None, publisherID=None, siteID=None,
-                         campaignList=None, token=None, format='XML'):
+                         campaignList=None, token=None, format=None):
         """
         Serviço utilizado somente na integração do Aplicativo com o Lomadee.
         Dentro do fluxo de integração, o aplicativo utiliza esse serviço
@@ -256,7 +258,7 @@ class Buscape():
 
 
     def find_offer_list(self, categoryID=None, productID=None, barcode=None,
-                        keyword=None, lomadee=False, format="XML",
+                        keyword=None, lomadee=False, format=None,
                         results=10, page=1, priceMin=None, priceMax=None,
                         sort=None, medal=None):
         """
@@ -291,7 +293,7 @@ class Buscape():
         return self.__search(method=method, parameter=parameter)
 
 
-    def top_products(self, format="XML", results=10, page=1, priceMin=None,
+    def top_products(self, format=None, results=10, page=1, priceMin=None,
                      priceMax=None, sort=None, medal=None):
 
         """
@@ -306,7 +308,7 @@ class Buscape():
 
         return self.__search(method=method, parameter=parameter)
 
-    def view_product_details(self, productID=None, format="XML"):
+    def view_product_details(self, productID=None, format=None):
         """
         Método retorna os detalhes técnicos de um determinado produto.
         """
@@ -321,13 +323,16 @@ class Buscape():
 
         return self.__search(method=method, parameter=parameter)
 
-    def view_seller_details(self, sellerID=None, format="XML"):
+    def view_seller_details(self, sellerID=None, format=None):
         """
         Método que retorna os detalhes de uma loja ou empresa como:
         endereços, telefones de contato e etc.
         """
         if not sellerID:
             raise ValueError("sellerID option must be specified")
+
+        if not isinstance(sellerID, int):
+            raise AssertionError('sellerID must be int')
 
         method = "viewSellerDetails"
 
@@ -337,7 +342,7 @@ class Buscape():
 
         return self.__search(method=method, parameter=parameter)
 
-    def view_user_ratings(self, productID=None, format="XML"):
+    def view_user_ratings(self, productID=None, format=None):
         """
         Método que retorna as avaliações dos usuários sobre um determinado
         produto.

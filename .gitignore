@@ -7,4 +7,5 @@ nbproject/
 
 exemplo.py
 
+.coverage
 *.sw*

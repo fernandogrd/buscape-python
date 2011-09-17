@@ -349,6 +349,8 @@ class Buscape():
         """
         if not productID:
             raise ValueError('productID option must be specified')
+        if not isinstance(productID, int):
+            raise AssertionError('productID must be int')
 
         method = "viewUserRatings"
 

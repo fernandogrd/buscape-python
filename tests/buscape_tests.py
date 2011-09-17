@@ -321,6 +321,7 @@ class BuscapeFastTest(BuscapeTest):
             self.b.view_product_details,
         )
 
+
     def test_view_seller_details(self):
         self.assertRaisesMessage(
             ValueError,
@@ -340,6 +341,13 @@ class BuscapeFastTest(BuscapeTest):
             ValueError,
             'productID option must be specified',
             self.b.view_user_ratings,
+        )
+
+        self.assertRaisesMessage(
+            AssertionError,
+            'productID must be int',
+            self.b.view_user_ratings,
+            productID='y',
         )
 
 
@@ -385,7 +393,7 @@ class BuscapeRequestTest(BuscapeTest):
         self.assertTrue(data is not None)
 
     def test_view_user_ratings(self):
-        resp = self.b.view_user_ratings(productID='y')
+        resp = self.b.view_user_ratings(productID=10)
         code = self._get_code(resp)
         self.assertEquals(code, 0)
 

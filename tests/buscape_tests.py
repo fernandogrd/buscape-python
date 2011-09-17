@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import unittest
-from unittest import TestSuite
 from urllib2 import URLError, HTTPError
 import sys
 
@@ -14,7 +13,8 @@ class BuscapeTest(unittest.TestCase):
         self.b = Buscape(applicationID=self.applicationID)
         self.b.set_sandbox()
 
-    def assertRaisesMessage(self, excClass, message, callableObj, *args, **kwargs):
+    def assertRaisesMessage(self, excClass, message, callableObj, *args,
+                            **kwargs):
         try:
             callableObj(*args, **kwargs)
         except excClass, e:
@@ -29,10 +29,13 @@ class BuscapeTest(unittest.TestCase):
             if message is not None and reason == message:
                 return True
             else:
-                raise self.failureException, "\nMessage expected: %s \nMessage raised: %s" %(message, reason)
+                raise (self.failureException, "\nMessage expected: %s \nMessag"
+                       "e raised: %s" % (message, reason))
         else:
-            if hasattr(excClass,'__name__'): excName = excClass.__name__
-            else: excName = str(excClass)
+            if hasattr(excClass, '__name__'):
+                excName = excClass.__name__
+            else:
+                excName = str(excClass)
             raise self.failureException, "%s not raised" % excName
 
     """
@@ -41,32 +44,62 @@ class BuscapeTest(unittest.TestCase):
     def test_assertRaisesMessage(self):
         def _raise(e):
             raise e
-        self.assertTrue(self.assertRaisesMessage(Exception, 'Error', _raise, Exception('Error')) )
-        self.assertRaises(Exception, self.assertRaisesMessage, Exception, _raise, Exception('Error') )
-        self.assertRaises(self.failureException, self.assertRaisesMessage, Exception, 'Not correct', _raise, Exception('Error') )
+        self.assertTrue(
+            self.assertRaisesMessage(
+                Exception,
+                'Error',
+                _raise,
+                Exception('Error'),
+            )
+        )
+
+        self.assertRaises(
+            Exception,
+            self.assertRaisesMessage,
+            Exception,
+            _raise,
+            Exception('Error'),
+        )
+
+        self.assertRaises(self.failureException,
+            self.assertRaisesMessage,
+            Exception,
+            'Not correct',
+            _raise,
+            Exception('Error'),
+        )
 
 
 class BuscapeFastTest(BuscapeTest):
 
     def test_applicationid_cannot_be_none(self):
-        self.assertRaisesMessage(ValueError, 'User ID must be specified', Buscape)
+        self.assertRaisesMessage(
+            ValueError,
+            'User ID must be specified',
+            Buscape,
+        )
 
     def test_applicationid_cannot_be_blank(self):
-        self.assertRaisesMessage(ValueError, 'User ID must be specified', Buscape, applicationID='')
+        self.assertRaisesMessage(
+            ValueError,
+            'User ID must be specified',
+            Buscape,
+            applicationID='',
+    )
 
     def test_validate_categoryID(self):
         self.assertRaisesMessage(
             AssertionError,
             'categoryID must be int',
             self.b._validate_categoryID,
-            'teste'
+            'teste',
         )
 
         self.assertRaisesMessage(
             ValueError,
             'categoryID must be positive',
             self.b._validate_categoryID,
-            -20
+            -20,
         )
 
         self.assertEqual(self.b._validate_categoryID(10), None)
@@ -78,7 +111,7 @@ class BuscapeFastTest(BuscapeTest):
             ValueError,
             'the return format must be XML or JSON',
             default_filter,
-            format=''
+            format='',
         )
 
         # results
@@ -86,14 +119,14 @@ class BuscapeFastTest(BuscapeTest):
             ValueError,
             'results must be a integer between 1 and 999',
             default_filter,
-            results=''
+            results='',
         )
 
         self.assertRaisesMessage(
             ValueError,
             'results must be a integer between 1 and 999',
             default_filter,
-            results=1000
+            results=1000,
         )
 
         # page
@@ -101,14 +134,14 @@ class BuscapeFastTest(BuscapeTest):
             ValueError,
             'page must be a integer between 1 and 999',
             default_filter,
-            page=1000
+            page=1000,
         )
 
         self.assertRaisesMessage(
             ValueError,
             'page must be a integer between 1 and 999',
             default_filter,
-            page=''
+            page='',
         )
 
         # priceMin
@@ -116,21 +149,21 @@ class BuscapeFastTest(BuscapeTest):
             AssertionError,
             'priceMin must be a float',
             default_filter,
-            priceMin=''
+            priceMin='',
         )
 
         self.assertRaisesMessage(
             TypeError,
             'priceMin must be a float',
             default_filter,
-            priceMin={}
+            priceMin={},
         )
 
         self.assertRaisesMessage(
             ValueError,
             'priceMin cannot be negative.',
             default_filter,
-            priceMin=-0.1
+            priceMin=-0.1,
         )
 
         # priceMax
@@ -139,28 +172,28 @@ class BuscapeFastTest(BuscapeTest):
             AssertionError,
             'priceMax must be a float',
             default_filter,
-            priceMax=''
+            priceMax='',
         )
 
         self.assertRaisesMessage(
             TypeError,
             'priceMax must be a float',
             default_filter,
-            priceMax={}
+            priceMax={},
         )
 
         self.assertRaisesMessage(
             ValueError,
             'priceMax cannot be negative.',
             default_filter,
-            priceMax=-0.1
+            priceMax=-0.1,
         )
 
         self.assertRaisesMessage(
             ValueError,
             'priceMax must be greater then priceMin',
             default_filter,
-            priceMin=1, priceMax=0.9
+            priceMin=1, priceMax=0.9,
         )
 
         # Sort
@@ -168,7 +201,7 @@ class BuscapeFastTest(BuscapeTest):
             ValueError,
             'The value in the sort parameter is not valid',
             default_filter,
-            sort='reverse'
+            sort='reverse',
         )
 
         # Medal
@@ -176,32 +209,31 @@ class BuscapeFastTest(BuscapeTest):
             ValueError,
             'The value in the medal parameter is not valid',
             default_filter,
-            medal='stone'
+            medal='stone',
         )
 
         # Teste retorno válido
         self.assertEqual(
             default_filter(
                 format='json', results=22, page=2, priceMin=1.0, priceMax=20.0,
-                sort='price', medal='gold'
+                sort='price', medal='gold',
             ),
             {'sort': 'price', 'format': 'json', 'results': 22, 'page': 2,
-            'priceMax': 20.0, 'medal': None, 'priceMin': 1.0}
+            'priceMax': 20.0, 'medal': None, 'priceMin': 1.0},
         )
-
 
     def test_find_category_parameters_must_be_int(self):
         self.assertRaisesMessage(
             ValueError,
             'keyword or categoryID option must be specified',
-            self.b.find_category_list
+            self.b.find_category_list,
         )
 
         self.assertRaisesMessage(
             ValueError,
             'keyword or categoryID option must be specified',
             self.b.find_category_list,
-            keyword=''
+            keyword='',
         )
 
     def test_find_category_both_parameters_are_not_accepted(self):
@@ -210,47 +242,42 @@ class BuscapeFastTest(BuscapeTest):
             'you must specify only keyword or categoryID. Both values aren\'t'
             ' accepted',
             self.b.find_category_list,
-            keyword='xxx', categoryID=999
+            keyword='xxx', categoryID=999,
         )
-
-    """
-    def test_find_category_if_no_connection_should_raise_no_connection_error(self):
-        self.assertRaisesMessage(URLError, 'no connection avaliable',self.b.find_category_list, categoryID=0)
-    """
 
     def test_find_product_parameters_must_exists(self):
         self.assertRaisesMessage(
             ValueError,
             'keyword or categoryID option must be specified',
-            self.b.find_product_list
+            self.b.find_product_list,
         )
 
         self.assertRaisesMessage(
             AssertionError,
             'categoryID must be int',
             self.b.find_product_list,
-            keyword='', categoryID=''
+            keyword='', categoryID='',
         )
 
         self.assertRaisesMessage(
             ValueError,
             'categoryID must be positive',
             self.b.find_product_list,
-            categoryID=-1
+            categoryID=-1,
         )
 
     def test_create_source_id_sourceName_cannot_be_None(self):
         self.assertRaisesMessage(
             ValueError,
             'sourceName option must be specified',
-            self.b.create_source_id
+            self.b.create_source_id,
         )
 
     def test_create_source_id_publisherID_cannot_be_None(self):
         self.assertRaisesMessage(
             ValueError,
             'publisherID option must be specified',
-            self.b.create_source_id, sourceName='xxx'
+            self.b.create_source_id, sourceName='xxx',
         )
 
     def test_create_source_id_siteID_cannot_be_None(self):
@@ -258,7 +285,7 @@ class BuscapeFastTest(BuscapeTest):
             ValueError,
             'siteID option must be specified',
             self.b.create_source_id,
-            sourceName='xxx', publisherID='abc'
+            sourceName='xxx', publisherID='abc',
         )
 
     def test_create_source_id_token_cannot_be_None(self):
@@ -266,35 +293,35 @@ class BuscapeFastTest(BuscapeTest):
             ValueError,
             'token option must be specified',
             self.b.create_source_id,
-            sourceName='xxx', publisherID='abc', siteID='def'
+            sourceName='xxx', publisherID='abc', siteID='def',
         )
 
     def test_find_offer_list_at_least_one_parameter_must_be_specified(self):
         self.assertRaisesMessage(
             ValueError,
             'One parameter must be especified',
-            self.b.find_offer_list
+            self.b.find_offer_list,
         )
 
     def test_view_product_details_productID_must_be_valid(self):
         self.assertRaisesMessage(
             ValueError,
             'productID option must be specified',
-            self.b.view_product_details
+            self.b.view_product_details,
         )
 
     def test_view_seller_details_productID_must_be_valid(self):
         self.assertRaisesMessage(
             ValueError,
             'sellerID option must be specified',
-            self.b.view_seller_details
+            self.b.view_seller_details,
         )
 
     def test_view_user_ratings_productID_must_be_valid(self):
         self.assertRaisesMessage(
             ValueError,
             'productID option must be specified',
-            self.b.view_user_ratings
+            self.b.view_user_ratings,
         )
 
 
@@ -306,7 +333,7 @@ class BuscapeRequestTest(BuscapeTest):
         self.assertRaisesMessage(
             HTTPError,
             'Your application is not approved yet',
-            app.find_category_list, keyword='xxx'
+            app.find_category_list, keyword='xxx',
         )
 
     def test_application_with_wrong_applicationID_and_country_None(self):
@@ -317,7 +344,7 @@ class BuscapeRequestTest(BuscapeTest):
             HTTPError,
             'The request requires user authentication',
             app.find_category_list,
-            keyword='xxx'
+            keyword='xxx',
         )
 
     def test_find_category_by_keyword_must_return_200(self):
@@ -333,8 +360,8 @@ class BuscapeRequestTest(BuscapeTest):
         self.assertEquals(code, 200)
 
     def test_find_category_by_categoryId_must_return_data(self):
-         data = self.b.find_category_list(categoryID=0)['data']
-         self.assertTrue(data is not None)
+        data = self.b.find_category_list(categoryID=0)['data']
+        self.assertTrue(data is not None)
 
     def test_view_user_ratings_must_return_200(self):
         code = self.b.view_user_ratings(productID='y')['code']
@@ -354,7 +381,7 @@ class BuscapeRequestTest(BuscapeTest):
 
     def test_find_offer_list_using_barcode_must_return_200(self):
         offer_list = self.b.find_offer_list(
-            barcode='1234', sort='price', medal='gold'
+            barcode='1234', sort='price', medal='gold',
         )
 
         code = offer_list['code']
@@ -362,15 +389,15 @@ class BuscapeRequestTest(BuscapeTest):
 
     def test_find_offer_list_using_productID_must_return_200(self):
         offer_list = self.b.find_offer_list(
-            productID='1234', sort='price', medal='gold'
+            productID='1234', sort='price', medal='gold',
         )
 
         code = offer_list['code']
-        self.assertEquals(code ,200)
+        self.assertEquals(code, 200)
 
     def test_find_offer_list_using_lomadee_must_return_200(self):
         offer_list = self.b.find_offer_list(
-            keyword='xpto', lomadee=True, sort='price', medal='gold'
+            keyword='xpto', lomadee=True, sort='price', medal='gold',
         )
         code = offer_list['code']
 
@@ -379,7 +406,7 @@ class BuscapeRequestTest(BuscapeTest):
     def test_find_offer_list_using_all_parameters_must_return_200(self):
         offer_list = self.b.find_offer_list(
             keyword='xpto', lomadee=True, results=10, page=1, priceMin=0.1,
-            priceMax=10.00, sort='price', medal='gold'
+            priceMax=10.00, sort='price', medal='gold',
         )
 
         code = offer_list['code']
@@ -387,7 +414,7 @@ class BuscapeRequestTest(BuscapeTest):
 
     def test_find_offer_list_using_keyword_must_return_200(self):
         offer_list = self.b.find_offer_list(
-            keyword='xpto', sort='price', medal='gold'
+            keyword='xpto', sort='price', medal='gold',
         )
         code = offer_list['code']
 
@@ -395,7 +422,7 @@ class BuscapeRequestTest(BuscapeTest):
 
     def test_find_offer_list_using_categoryID_must_return_200(self):
         offer_list = self.b.find_offer_list(
-            categoryID=0, sort='price', medal='gold'
+            categoryID=0, sort='price', medal='gold',
         )
 
         code = offer_list['code']
@@ -403,24 +430,28 @@ class BuscapeRequestTest(BuscapeTest):
 
     def test_find_offer_list_using_keword_and_categoryID_must_return_200(self):
         offer_list = self.b.find_offer_list(
-            keyword='xpto', categoryID=0, sort='price', medal='gold'
+            keyword='xpto', categoryID=0, sort='price', medal='gold',
         )
 
         code = offer_list['code']
 
         self.assertEquals(code, 200)
 
-    def test_create_source_id_use_campaignList_as_parameter_must_return_code_200(self):
+    def test_create_source_id_use_campaignList_as__must_return_code_200(self):
         source_id = self.b.create_source_id(
-            sourceName='xxx', publisherID='abc', siteID='def', token='ghi', campaignList='jkl'
+            sourceName='xxx',
+            publisherID='abc',
+            siteID='def',
+            token='ghi',
+            campaignList='jkl',
         )
 
         code = source_id['code']
         self.assertEquals(code, 200)
 
-    def test_create_source_id_without_use_campaignList_as_parameter_must_return_code_200(self):
+    def test_create_source_id_without_use_campaignList(self):
         source_id = self.b.create_source_id(
-            sourceName='xxx', publisherID='abc', siteID='def', token='ghi'
+            sourceName='xxx', publisherID='abc', siteID='def', token='ghi',
         )
 
         code = source_id['code']
@@ -428,7 +459,7 @@ class BuscapeRequestTest(BuscapeTest):
 
     def test_find_product_setting_maxPrice_must_return_200(self):
         find_product = self.b.find_product_list(
-            keyword='celular', maxPrice=1200.50
+            keyword='celular', maxPrice=1200.50,
         )
 
         code = find_product['code']
@@ -436,7 +467,7 @@ class BuscapeRequestTest(BuscapeTest):
 
     def test_find_product_setting_minPrice_and_maxPrice_must_return_200(self):
         find_product = self.b.find_product_list(
-            keyword='celular', minPrice=344.90, maxPrice=1200.50
+            keyword='celular', minPrice=344.90, maxPrice=1200.50,
         )
 
         code = find_product['code']
@@ -444,7 +475,7 @@ class BuscapeRequestTest(BuscapeTest):
 
     def test_find_product_using_lomadee_must_return_200(self):
         find_product = self.b.find_product_list(
-            keyword='celular', lomadee=True
+            keyword='celular', lomadee=True,
         )
 
         code = find_product['code']
@@ -452,8 +483,8 @@ class BuscapeRequestTest(BuscapeTest):
 
     def test_find_product_setting_all_variables(self):
         find_product = self.b.find_product_list(
-            keyword='celular', categoryID=0, format='json',page=3, results=20,
-            minPrice=344.90, maxPrice=1200.50
+            keyword='celular', categoryID=0, format='json', page=3, results=20,
+            minPrice=344.90, maxPrice=1200.50,
         )
 
         code = find_product['code']
@@ -461,7 +492,7 @@ class BuscapeRequestTest(BuscapeTest):
 
     def test_find_product_setting_minPrice_must_return_200(self):
         find_product = self.b.find_product_list(
-            keyword='celular', minPrice=200
+            keyword='celular', minPrice=200,
         )
 
         code = find_product['code']
@@ -479,16 +510,20 @@ class BuscapeRequestTest(BuscapeTest):
         data = self.b.find_product_list(categoryID=0)['data']
         self.assertTrue(data is not None)
 
-    def test_find_product_both_keywork_and_categoryid_parameter_must_return_200(self):
+    def test_find_product_both_keywork_and_categoryid_must_return_200(self):
         find_product = self.b.find_product_list(
-            keyword='celular', categoryID=0
+            keyword='celular', categoryID=0,
         )
 
         code = find_product['code']
         self.assertTrue(code, 200)
 
-    def test_find_product_both_keywork_and_categoryid_parameter_must_return_data(self):
-        data = self.b.find_product_list(keyword='celular',categoryID=0)['data']
+    def test_find_product_both_keywork_and_categoryid_must_return_data(self):
+        find_product = self.b.find_product_list(
+            keyword='celular', categoryID=0,
+        )
+
+        data = find_product['data']
         self.assertTrue(data is not None)
 
     def test_find_product_format_must_be_case_insensitive(self):
@@ -511,8 +546,10 @@ class BuscapeRequestTest(BuscapeTest):
         code = self.b.find_category_list(categoryID=0, format='json')['code']
         self.assertEquals(code, 200)
 
+
 def suite_fast():
     return unittest.makeSuite(BuscapeFastTest, 'test')
+
 
 def suite_request():
     return unittest.makeSuite(BuscapeRequestTest, 'test')

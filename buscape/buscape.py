@@ -336,17 +336,13 @@ class Buscape():
         Método que retorna as avaliações dos usuários sobre um determinado
         produto.
         """
-
-        if format.upper() not in ["XML", "JSON"]:
-            raise ValueError("the return format must be XML or JSON")
-
         if not productID:
             raise ValueError('productID option must be specified')
 
         method = "viewUserRatings"
 
-        parameter = "productId=%s&format=%s" % (productID, format)
+        params = self.__default_filter(format=format)
+        params['productId'] = productID
+        parameter = urlencode(params)
 
-        ret = self.__search(method=method, parameter=parameter)
-
-        return ret
+        return self.__search(method=method, parameter=parameter)

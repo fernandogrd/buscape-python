@@ -456,26 +456,24 @@ class BuscapeRequestTest(BuscapeTest):
         offer_list = self.b.find_offer_list(
             keyword='xpto', sort='price', medal='gold',
         )
-        code = self._get_code(offer_list)
 
+        code = self._get_code(offer_list)
         self.assertEquals(code, 0)
 
-    def test_find_offer_list_using_categoryID_must_return_200(self):
+        # categodyId
         offer_list = self.b.find_offer_list(
             categoryID=0, sort='price', medal='gold',
         )
 
-        code = offer_list['code']
-        self.assertEquals(code, 200)
+        code = self._get_code(offer_list)
+        self.assertEquals(code, 0)
 
-    def test_find_offer_list_using_keword_and_categoryID_must_return_200(self):
         offer_list = self.b.find_offer_list(
             keyword='xpto', categoryID=0, sort='price', medal='gold',
         )
 
-        code = offer_list['code']
-
-        self.assertEquals(code, 200)
+        code = self._get_code(offer_list)
+        self.assertEquals(code, 0)
 
     def test_create_source_id_use_campaignList_as__must_return_code_200(self):
         source_id = self.b.create_source_id(

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import unittest
+import json
 from urllib2 import URLError, HTTPError
 import sys
 
@@ -12,6 +13,10 @@ class BuscapeTest(unittest.TestCase):
         self.applicationID = '2b613573535a6d324874493d'
         self.b = Buscape(applicationID=self.applicationID)
         self.b.set_sandbox()
+
+    def _get_code(self, resp):
+        json_resp = json.loads(resp['data'])
+        return json_resp['details']['code']
 
     def assertRaisesMessage(self, excClass, message, callableObj, *args,
                             **kwargs):
@@ -347,19 +352,19 @@ class BuscapeRequestTest(BuscapeTest):
             keyword='xxx',
         )
 
-    def test_find_category_by_keyword_must_return_200(self):
-        code = self.b.find_category_list(keyword='LG')['code']
-        self.assertEquals(code, 200)
+    def test_find_category_by_keyword(self):
+        resp = self.b.find_category_list(keyword='LG', format='json')
+        code = self._get_code(resp)
+        self.assertEquals(code, 0)
 
-    def test_find_category_by_keyword_must_return_data(self):
         data = self.b.find_category_list(keyword='LG')['data']
         self.assertTrue(data is not None)
 
-    def test_find_category_by_categoryId_must_return_200(self):
-        code = self.b.find_category_list(categoryID=0)['code']
-        self.assertEquals(code, 200)
+    def test_find_category_by_categoryId(self):
+        resp = self.b.find_category_list(categoryID=0, format='json')
+        code = self._get_code(resp)
+        self.assertEquals(code, 0)
 
-    def test_find_category_by_categoryId_must_return_data(self):
         data = self.b.find_category_list(categoryID=0)['data']
         self.assertTrue(data is not None)
 

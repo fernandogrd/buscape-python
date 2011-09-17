@@ -144,7 +144,7 @@ class Buscape():
             params['sort'] = sort
 
         if medal is not None:
-            params['medal'] = None
+            params['medal'] = medal
 
         return params
 

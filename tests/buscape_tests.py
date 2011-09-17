@@ -230,7 +230,7 @@ class BuscapeFastTest(BuscapeTest):
                 sort='price', medal='gold',
             ),
             {'sort': 'price', 'format': 'json', 'results': 22, 'page': 2,
-            'priceMax': 20.0, 'medal': None, 'priceMin': 1.0},
+            'priceMax': 20.0, 'medal': 'gold', 'priceMin': 1.0},
         )
 
     def test_find_category_parameters_must_be_int(self):
@@ -418,46 +418,47 @@ class BuscapeRequestTest(BuscapeTest):
         code = self._get_code(resp)
         self.assertEquals(code, 0)
 
-    def test_find_offer_list_using_barcode_must_return_200(self):
+    def test_find_offer_list(self):
+        # barcode
         offer_list = self.b.find_offer_list(
             barcode='1234', sort='price', medal='gold',
         )
 
-        code = offer_list['code']
-        self.assertEquals(code, 200)
+        code = self._get_code(offer_list)
+        self.assertEquals(code, 0)
 
-    def test_find_offer_list_using_productID_must_return_200(self):
+        # productID
         offer_list = self.b.find_offer_list(
             productID='1234', sort='price', medal='gold',
         )
 
-        code = offer_list['code']
-        self.assertEquals(code, 200)
+        code = self._get_code(offer_list)
+        self.assertEquals(code, 0)
 
-    def test_find_offer_list_using_lomadee_must_return_200(self):
+        # lomadee
         offer_list = self.b.find_offer_list(
             keyword='xpto', lomadee=True, sort='price', medal='gold',
         )
-        code = offer_list['code']
+        code = self._get_code(offer_list)
 
-        self.assertEquals(code, 200)
+        self.assertEquals(code, 0)
 
-    def test_find_offer_list_using_all_parameters_must_return_200(self):
+        # All params
         offer_list = self.b.find_offer_list(
             keyword='xpto', lomadee=True, results=10, page=1, priceMin=0.1,
             priceMax=10.00, sort='price', medal='gold',
         )
 
-        code = offer_list['code']
-        self.assertEquals(code, 200)
+        code = self._get_code(offer_list)
+        self.assertEquals(code, 0)
 
-    def test_find_offer_list_using_keyword_must_return_200(self):
+        # keyword
         offer_list = self.b.find_offer_list(
             keyword='xpto', sort='price', medal='gold',
         )
-        code = offer_list['code']
+        code = self._get_code(offer_list)
 
-        self.assertEquals(code, 200)
+        self.assertEquals(code, 0)
 
     def test_find_offer_list_using_categoryID_must_return_200(self):
         offer_list = self.b.find_offer_list(

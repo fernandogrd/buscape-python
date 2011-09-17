@@ -18,6 +18,12 @@ class BuscapeTest(unittest.TestCase):
         json_resp = json.loads(resp['data'])
         return json_resp['details']['code']
 
+    def test_set_default_format(self):
+        buscape = Buscape(self.applicationID)
+        self.assertEqual(buscape.format, 'XML')
+        buscape.set_default_format('json')
+        self.assertEqual(buscape.format, 'json')
+
     def assertRaisesMessage(self, excClass, message, callableObj, *args,
                             **kwargs):
         try:
@@ -331,6 +337,9 @@ class BuscapeFastTest(BuscapeTest):
 
 
 class BuscapeRequestTest(BuscapeTest):
+    def setUp(self):
+        super(BuscapeRequestTest, self).setUp()
+        self.b.set_default_format('json')
 
     def test_application_has_not_been_approved(self):
         app = Buscape(applicationID=self.applicationID)
@@ -353,7 +362,7 @@ class BuscapeRequestTest(BuscapeTest):
         )
 
     def test_find_category_by_keyword(self):
-        resp = self.b.find_category_list(keyword='LG', format='json')
+        resp = self.b.find_category_list(keyword='LG')
         code = self._get_code(resp)
         self.assertEquals(code, 0)
 
@@ -361,7 +370,7 @@ class BuscapeRequestTest(BuscapeTest):
         self.assertTrue(data is not None)
 
     def test_find_category_by_categoryId(self):
-        resp = self.b.find_category_list(categoryID=0, format='json')
+        resp = self.b.find_category_list(categoryID=0)
         code = self._get_code(resp)
         self.assertEquals(code, 0)
 

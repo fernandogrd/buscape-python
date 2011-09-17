@@ -25,8 +25,8 @@ class Buscape():
             raise ValueError("User ID must be specified")
 
         self.applicationID = applicationID
-
         self.environment = 'bws'
+        self.format = 'XML'
 
         if country is None:
             self.country = "BR"
@@ -79,6 +79,8 @@ class Buscape():
         '''
         if format.upper() not in ["XML", "JSON"]:
             raise ValueError("the return format must be XML or JSON")
+        else:
+            format = self.format
 
         if results is not None:
             if not isinstance(results, int) or not (0 < results < 999):
@@ -156,6 +158,10 @@ class Buscape():
         Define the environment test
         """
         self.environment = 'sandbox'
+
+    def set_default_format(self, format):
+        self.__default_filter(format=format)
+        self.format = format
 
     def find_category_list(self, keyword=None, categoryID=None, format='XML'):
         """

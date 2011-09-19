@@ -475,25 +475,25 @@ class BuscapeRequestTest(BuscapeTest):
         code = self._get_code(offer_list)
         self.assertEquals(code, 0)
 
-    def test_create_source_id_use_campaignList_as__must_return_code_200(self):
+    def test_create_source_id_use(self):
         source_id = self.b.create_source_id(
             sourceName='xxx',
-            publisherID='abc',
-            siteID='def',
+            publisherID=10,
+            siteID=10,
             token='ghi',
-            campaignList='jkl',
+            campaignList='1,2',
         )
 
-        code = source_id['code']
-        self.assertEquals(code, 200)
+        code = self._get_code(source_id)
+        self.assertEquals(code, 0)
 
-    def test_create_source_id_without_use_campaignList(self):
+        # no campaignList
         source_id = self.b.create_source_id(
-            sourceName='xxx', publisherID='abc', siteID='def', token='ghi',
+            sourceName='xxx', publisherID=10, siteID=10, token='ghi',
         )
 
-        code = source_id['code']
-        self.assertEquals(code, 200)
+        code = self._get_code(source_id)
+        self.assertEquals(code, 0)
 
     def test_find_product_setting_maxPrice_must_return_200(self):
         find_product = self.b.find_product_list(

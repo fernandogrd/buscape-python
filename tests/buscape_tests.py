@@ -544,90 +544,83 @@ class BuscapeRequestTest(BuscapeTest):
         code = self._get_code(source_id)
         self.assertEquals(code, 0)
 
-    def test_find_product_setting_maxPrice_must_return_200(self):
+    def test_find_product(self):
+        # maxPrice
         find_product = self.b.find_product_list(
             keyword='celular', maxPrice=1200.50,
         )
 
-        code = find_product['code']
-        self.assertEquals(code, 200)
+        code = self._get_code(find_product)
+        self.assertEquals(code, 0)
 
-    def test_find_product_setting_minPrice_and_maxPrice_must_return_200(self):
+        # maxPrice, minPrice
         find_product = self.b.find_product_list(
             keyword='celular', minPrice=344.90, maxPrice=1200.50,
         )
 
-        code = find_product['code']
-        self.assertEquals(code, 200)
+        code = self._get_code(find_product)
+        self.assertEquals(code, 0)
 
-    def test_find_product_using_lomadee_must_return_200(self):
+        # lomadee
         find_product = self.b.find_product_list(
             keyword='celular', lomadee=True,
         )
 
-        code = find_product['code']
-        self.assertEquals(code, 200)
+        code = self._get_code(find_product)
+        self.assertEquals(code, 0)
 
-    def test_find_product_setting_all_variables(self):
+        # Todas opções
         find_product = self.b.find_product_list(
             keyword='celular', categoryID=0, format='json', page=3, results=20,
             minPrice=344.90, maxPrice=1200.50,
         )
 
-        code = find_product['code']
-        self.assertEquals(code, 200)
+        code = self._get_code(find_product)
+        self.assertEquals(code, 0)
 
-    def test_find_product_setting_minPrice_must_return_200(self):
+        # minPrice
         find_product = self.b.find_product_list(
             keyword='celular', minPrice=200,
         )
 
-        code = find_product['code']
-        self.assertEquals(code, 200)
+        code = self._get_code(find_product)
+        self.assertEquals(code, 0)
 
-    def test_find_product_only_keyword_parameter_must_return_data(self):
+        # Keyword + dados
         data = self.b.find_product_list(keyword='celular')['data']
         self.assertTrue(data is not None)
 
-    def test_find_product_only_categoryid_parameter_must_return_200(self):
-        code = self.b.find_product_list(categoryID=0)['code']
-        self.assertEquals(code, 200)
-
-    def test_find_product_only_categoryid_parameter_must_return_data(self):
         data = self.b.find_product_list(categoryID=0)['data']
         self.assertTrue(data is not None)
 
-    def test_find_product_both_keywork_and_categoryid_must_return_200(self):
+        # keyword + categoryID
         find_product = self.b.find_product_list(
             keyword='celular', categoryID=0,
         )
 
-        code = find_product['code']
-        self.assertTrue(code, 200)
-
-    def test_find_product_both_keywork_and_categoryid_must_return_data(self):
-        find_product = self.b.find_product_list(
-            keyword='celular', categoryID=0,
-        )
+        code = self._get_code(find_product)
+        self.assertEqual(code, 0)
 
         data = find_product['data']
         self.assertTrue(data is not None)
+
+        # results
+        product_list = self.b.find_product_list(categoryID=0, results=20)
+        code = self._get_code(product_list)
+        self.assertEquals(code, 0)
+
+        # page
+        code = self._get_code(self.b.find_product_list(categoryID=0, page=20))
+        self.assertEquals(code, 0)
+
+        # keyword only
+        code = self._get_code(self.b.find_product_list(keyword='celular'))
+        self.assertEquals(code, 0)
 
     def test_find_product_format_must_be_case_insensitive(self):
         code = self.b.find_product_list(categoryID=0, format='json')['code']
         self.assertEquals(code, 200)
 
-    def test_find_product_results_must_be_between_1_and_999(self):
-        code = self.b.find_product_list(categoryID=0, results=20)['code']
-        self.assertEquals(code, 200)
-
-    def test_find_product_page_must_be_between_1_and_999(self):
-        code = self.b.find_product_list(categoryID=0, page=20)['code']
-        self.assertEquals(code, 200)
-
-    def test_find_product_only_keyword_parameter_must_return_200(self):
-        code = self.b.find_product_list(keyword='celular')['code']
-        self.assertEquals(code, 200)
 
     def test_find_category_parameter_format_must_be_case_insensitive(self):
         code = self.b.find_category_list(categoryID=0, format='json')['code']

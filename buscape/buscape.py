@@ -207,7 +207,7 @@ class Buscape():
 
         if keyword:
             params['keyword'] = keyword
-        if categoryID:
+        if categoryID is not None:
             params['categoryId'] = categoryID
 
         if lomadee:

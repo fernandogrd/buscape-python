@@ -277,34 +277,51 @@ class BuscapeFastTest(BuscapeTest):
             categoryID=-1,
         )
 
-    def test_create_source_id_sourceName_cannot_be_None(self):
+    def test_create_source_id(self):
+        # sourceName
         self.assertRaisesMessage(
             ValueError,
             'sourceName option must be specified',
             self.b.create_source_id,
         )
 
-    def test_create_source_id_publisherID_cannot_be_None(self):
+        # publisherID
         self.assertRaisesMessage(
             ValueError,
             'publisherID option must be specified',
             self.b.create_source_id, sourceName='xxx',
         )
 
-    def test_create_source_id_siteID_cannot_be_None(self):
+        # publisherID
+        self.assertRaisesMessage(
+            ValueError,
+            'publisherID must be int',
+            self.b.create_source_id,
+            sourceName='xxx', publisherID='xx',
+        )
+
+        # siteID
         self.assertRaisesMessage(
             ValueError,
             'siteID option must be specified',
             self.b.create_source_id,
-            sourceName='xxx', publisherID='abc',
+            sourceName='xxx', publisherID=10,
         )
 
-    def test_create_source_id_token_cannot_be_None(self):
+        self.assertRaisesMessage(
+            ValueError,
+            'siteID must be int',
+            self.b.create_source_id,
+            sourceName='xxx',
+            publisherID=10, siteID='xx',
+        )
+
+        # token
         self.assertRaisesMessage(
             ValueError,
             'token option must be specified',
             self.b.create_source_id,
-            sourceName='xxx', publisherID='abc', siteID='def',
+            sourceName='xxx', publisherID=10, siteID=10,
         )
 
     def test_find_offer_list_at_least_one_parameter_must_be_specified(self):

@@ -235,15 +235,19 @@ class Buscape():
         params = self.__default_filter(format=format)
 
         if not sourceName:
-            raise ValueError("sourceName option must be specified")
+            raise ValueError('sourceName option must be specified')
 
-        if not publisherID:
-            raise ValueError("publisherID option must be specified")
+        if publisherID is None:
+            raise ValueError('publisherID option must be specified')
+        elif not isinstance(publisherID, int):
+            raise ValueError('publisherID must be int')
 
-        if not siteID:
+        if siteID is None:
             raise ValueError("siteID option must be specified")
+        elif not isinstance(siteID, int):
+            raise ValueError('siteID must be int')
 
-        if not token:
+        if token is None:
             raise ValueError("token option must be specified")
 
         params.update({'sourceName': sourceName, 'publisherId': publisherID,

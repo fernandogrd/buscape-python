@@ -254,6 +254,8 @@ class Buscape():
                        'siteId': siteID, 'token': token})
 
         if campaignList:
+            if isinstance(campaignList, list):
+                campaignList = ','.join(str(i) for i in campaignList)
             params['campaignList'] = campaignList
 
         parameter = urlencode(params)

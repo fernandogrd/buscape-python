@@ -498,7 +498,31 @@ class BuscapeRequestTest(BuscapeTest):
             publisherID=10,
             siteID=10,
             token='ghi',
-            campaignList='1,2',
+            campaignList='1',
+        )
+
+        source_id = self.b.create_source_id(
+            sourceName='xxx',
+            publisherID=10,
+            siteID=10,
+            token='ghi',
+            campaignList=1,
+        )
+
+        source_id = self.b.create_source_id(
+            sourceName='xxx',
+            publisherID=10,
+            siteID=10,
+            token='ghi',
+            campaignList='1,2,3',
+        )
+
+        source_id = self.b.create_source_id(
+            sourceName='xxx',
+            publisherID=10,
+            siteID=10,
+            token='ghi',
+            campaignList=[1,2,3],
         )
 
         code = self._get_code(source_id)

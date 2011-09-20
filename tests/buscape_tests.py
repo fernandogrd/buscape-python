@@ -500,6 +500,8 @@ class BuscapeRequestTest(BuscapeTest):
             token='ghi',
             campaignList='1',
         )
+        code = self._get_code(source_id)
+        self.assertEquals(code, 0)
 
         source_id = self.b.create_source_id(
             sourceName='xxx',
@@ -509,6 +511,9 @@ class BuscapeRequestTest(BuscapeTest):
             campaignList=1,
         )
 
+        code = self._get_code(source_id)
+        self.assertEquals(code, 0)
+
         source_id = self.b.create_source_id(
             sourceName='xxx',
             publisherID=10,
@@ -516,6 +521,9 @@ class BuscapeRequestTest(BuscapeTest):
             token='ghi',
             campaignList='1,2,3',
         )
+
+        code = self._get_code(source_id)
+        self.assertEquals(code, 0)
 
         source_id = self.b.create_source_id(
             sourceName='xxx',

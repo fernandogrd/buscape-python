@@ -26,7 +26,7 @@ class Buscape():
 
         self.applicationID = applicationID
         self.environment = 'bws'
-        self.format = 'XML'
+        self.format = 'xml'
 
         if country is None:
             self.country = "BR"
@@ -83,6 +83,8 @@ class Buscape():
                 raise ValueError("the return format must be XML or JSON")
         else:
             format = self.format
+        # Formato precisa ser em lower case
+        format = format.lower()
 
         if results is not None:
             if not isinstance(results, int) or not (0 < results < 999):

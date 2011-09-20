@@ -20,7 +20,7 @@ class BuscapeTest(unittest.TestCase):
 
     def test_set_default_format(self):
         buscape = Buscape(self.applicationID)
-        self.assertEqual(buscape.format, 'XML')
+        self.assertEqual(buscape.format, 'xml')
         buscape.set_default_format('json')
         self.assertEqual(buscape.format, 'json')
 
@@ -616,15 +616,6 @@ class BuscapeRequestTest(BuscapeTest):
         # keyword only
         code = self._get_code(self.b.find_product_list(keyword='celular'))
         self.assertEquals(code, 0)
-
-    def test_find_product_format_must_be_case_insensitive(self):
-        code = self.b.find_product_list(categoryID=0, format='json')['code']
-        self.assertEquals(code, 200)
-
-
-    def test_find_category_parameter_format_must_be_case_insensitive(self):
-        code = self.b.find_category_list(categoryID=0, format='json')['code']
-        self.assertEquals(code, 200)
 
 
 def suite_fast():

@@ -373,26 +373,6 @@ class BuscapeRequestTest(BuscapeTest):
         super(BuscapeRequestTest, self).setUp()
         self.b.set_default_format('json')
 
-    def test_application_has_not_been_approved(self):
-        app = Buscape(applicationID=self.applicationID)
-
-        self.assertRaisesMessage(
-            HTTPError,
-            'Your application is not approved yet',
-            app.find_category_list, keyword='xxx',
-        )
-
-    def test_application_with_wrong_applicationID_and_country_None(self):
-        app = Buscape(applicationID='xpto', country=None)
-        app.set_sandbox()
-
-        self.assertRaisesMessage(
-            HTTPError,
-            'The request requires user authentication',
-            app.find_category_list,
-            keyword='xxx',
-        )
-
     def test_find_category_by_keyword(self):
         resp = self.b.find_category_list(keyword='LG')
         code = self._get_code(resp)

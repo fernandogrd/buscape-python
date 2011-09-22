@@ -34,25 +34,11 @@ class Buscape():
             self.country = country
 
     def __fetch_url(self, url=None):
-        try:
-            resp = urlopen(url)
-            data = resp.read()
-            return dict(code=resp.code, data=data, url=url)
-        except HTTPError, e:
-            if e.code == 401:
-                if self.environment == 'bws':
-                    raise HTTPError(url, e.code, "Your application is not "
-                                    "approved yet", None, None)
-                else:
-                    raise HTTPError(url, e.code, "The request requires user "
-                                    "authentication", None, None)
-        except URLError, e:
-            code_error = e.reason.errno
+        resp = urlopen(url)
+        data = resp.read()
 
-            if code_error == 11001:
-                raise URLError("no connection avaliable")
-            else:
-                raise URLError(e)
+        return dict(code=resp.code, data=data, url=url)
+
 
     def __search(self, method=None, parameter=None):
         if self.environment != 'sandbox':

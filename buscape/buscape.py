@@ -15,6 +15,8 @@ SORT_VALUES = ['price', 'dprice', 'rate', 'drate', 'seller', 'dseller',
 # Volores válidos para medal
 MEDAL_VALUES = ['all', 'diamond', 'gold', 'silver', 'bronze']
 
+COUNTRIES = ['AR', 'BR', 'CL', 'CO', 'MX', 'PE', 'VE']
+
 class Buscape():
     """
     Class for BuscaPé's API abstraction
@@ -28,17 +30,16 @@ class Buscape():
         self.environment = 'bws'
         self.format = 'xml'
 
-        if country is None:
-            self.country = "BR"
-        else:
-            self.country = country
+        if country not in COUNTRIES:
+            raise ValueError('country not in valid countries: {0}'
+                             ''.format(', '.join(COUNTRIES)))
+        self.country = country
 
     def __fetch_url(self, url=None):
         resp = urlopen(url)
         data = resp.read()
 
         return dict(code=resp.code, data=data, url=url)
-
 
     def __search(self, method=None, parameter=None):
         if self.environment != 'sandbox':
@@ -48,13 +49,7 @@ class Buscape():
               (self.environment, method, self.applicationID, self.country,
                parameter)
 
-        try:
-            ret = self.__fetch_url(url=req)
-            return ret
-        except HTTPError, e:
-            raise e
-        except URLError, e:
-            raise e
+        return self.__fetch_url(url=req)
 
     def __default_filter(self, format=None, results=10, page=1, priceMin=None,
                          priceMax=None, sort=None, medal=None):

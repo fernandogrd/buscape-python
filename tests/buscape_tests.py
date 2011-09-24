@@ -98,6 +98,15 @@ class BuscapeFastTest(BuscapeTest):
             applicationID='',
     )
 
+    def test_country(self):
+        self.assertRaisesMessage(
+            ValueError,
+            'country not in valid countries: AR, BR, CL, CO, MX, PE, VE',
+            Buscape,
+            applicationID=self.applicationID,  country='IN',
+        )
+
+
     def test_validate_categoryID(self):
         self.assertRaisesMessage(
             AssertionError,

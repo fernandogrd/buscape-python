@@ -4,6 +4,8 @@
 __author__ = "Igor Hercowitz, Alê Borba"
 __version__ = "v0.6.1"
 
+import socket
+
 from urllib import urlencode
 from urllib2 import urlopen, URLError, HTTPError
 
@@ -153,6 +155,7 @@ class Buscape():
         self.format = format
 
     def set_clientIp(self, ip):
+        socket.inet_aton(ip)  # Valida Ip
         self.clientIp = ip
 
     def find_category_list(self, keyword=None, categoryID=None, format=None):

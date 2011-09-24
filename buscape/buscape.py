@@ -158,6 +158,9 @@ class Buscape():
         socket.inet_aton(ip)  # Valida Ip
         self.clientIp = ip
 
+    def unset_clientIp(self):
+        self.clientIp = None
+
     def find_category_list(self, keyword=None, categoryID=None, format=None):
         """
         Método faz busca de categorias, permite que você exiba informações

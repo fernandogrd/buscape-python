@@ -24,6 +24,13 @@ class BuscapeTest(unittest.TestCase):
         buscape.set_default_format('json')
         self.assertEqual(buscape.format, 'json')
 
+    def test_set_clientId(self):
+        buscape = Buscape(self.applicationID)
+        buscape.set_sandbox()
+        buscape.set_clientIp('200.200.200.200')
+        url = buscape.find_category_list(keyword='teste')['url']
+        self.assertTrue('clientIp' in url)
+
     def assertRaisesMessage(self, excClass, message, callableObj, *args,
                             **kwargs):
         try:

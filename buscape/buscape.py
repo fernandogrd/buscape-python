@@ -29,6 +29,7 @@ class Buscape():
         self.applicationID = applicationID
         self.environment = 'bws'
         self.format = 'xml'
+        self.clientIp = None
 
         if country not in COUNTRIES:
             raise ValueError('country not in valid countries: {0}'
@@ -44,6 +45,9 @@ class Buscape():
     def __search(self, method=None, parameter=None):
         if self.environment != 'sandbox':
             self.environment = 'bws'
+
+        if self.clientIp:
+            parameter += '&' + urlencode({'clientIp': self.clientIp})
 
         req = "http://%s.buscape.com/service/%s/%s/%s/?%s" %\
               (self.environment, method, self.applicationID, self.country,
@@ -147,6 +151,9 @@ class Buscape():
     def set_default_format(self, format):
         self.__default_filter(format=format)
         self.format = format
+
+    def set_clientIp(self, ip):
+        self.clientIp = ip
 
     def find_category_list(self, keyword=None, categoryID=None, format=None):
         """
